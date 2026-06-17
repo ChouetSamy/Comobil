@@ -17,8 +17,7 @@ name text NN
 
 Trip:
 id int PK
-CityID int FK NN
-TripID int FK NN
+CityDepartID int FK NN
 RallyPoint text NN
 TripersID int FK NN
 ScheduleID int FK NN
@@ -26,7 +25,8 @@ TripType Enum NN default value "Depart" (values:"DEPART", "DESTINATION", "HALT" 
 
 TripPlanning:
 id int PK
-tripID int FK
+tripBeginID int FK (reference tripID)
+tripDestination int FK (reference tripID)
 seat int NN
 
 Schedule:
