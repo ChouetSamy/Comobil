@@ -7,6 +7,13 @@
 - CA 1 : les visiteurs du site peuvent voir les voyageurs sur le même trajet en fonction de la ville de départ et de destination
 - CA 2 : pour rejoindre ou créer un trajet, le visiteur dois être inscrit ET connecté ! -->
 
+### User Story 1.1 : En tant que visiteur, je veut m'inscrire afin de pouvoir se connecter
+- CA  1 : le voyageur se connecte, si il est n'est pas inscrit, il s'incrit en premier
+- CA 2 : l'utilisateur remplis les champs "email", "mot de passe", "nom", "prénom", "téléphone", "genre", tous sont obligatoire
+- CA 3 : en cas d'un champs manquant, l'utilisateur reçois un message "veuillez remplir le champs suivant:  (nom du champs)", et échoue à s'inscrire.
+- CA 4 : l'utilisateur remplis tous les champs, il s'enregistre et est connecté.
+
+
 ### User Story 1.2 : En tant que voyageur, je veut me connecter afin de pouvoir participer à un trajet
 
 - CA  1 : le voyageur se connecte, si non inscrit, il s'incrit en premier

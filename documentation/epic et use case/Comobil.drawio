@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Page-1" id="3UYdgUNF526rcLyxdX9I">
-    <mxGraphModel dx="1414" dy="827" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1488" dy="843" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -56,7 +56,7 @@
         </mxCell>
         <mxCell id="QGJw1FoXjFeknDLQSLWP-49" connectable="0" parent="QGJw1FoXjFeknDLQSLWP-47" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&quot;include&quot;" vertex="1">
           <mxGeometry relative="1" x="-0.4587" y="-4" as="geometry">
-            <mxPoint x="25" y="-7" as="offset" />
+            <mxPoint x="9" y="2" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-88" edge="1" parent="QGJw1FoXjFeknDLQSLWP-1" source="QGJw1FoXjFeknDLQSLWP-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ZafeQJWwrn9a1U3_Saur-87">
@@ -81,8 +81,13 @@
         <mxCell id="ZafeQJWwrn9a1U3_Saur-110" edge="1" parent="QGJw1FoXjFeknDLQSLWP-1" source="ZafeQJWwrn9a1U3_Saur-81" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FF3333;" target="ZafeQJWwrn9a1U3_Saur-98">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-2" connectable="0" parent="ZafeQJWwrn9a1U3_Saur-110" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&quot;extends&quot;" vertex="1">
+          <mxGeometry relative="1" x="-0.2819" y="3" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-81" parent="QGJw1FoXjFeknDLQSLWP-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="consulter son espace membre" vertex="1">
-          <mxGeometry height="50" width="80" x="60" y="180" as="geometry" />
+          <mxGeometry height="50" width="80" x="60" y="280" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-92" edge="1" parent="QGJw1FoXjFeknDLQSLWP-1" source="ZafeQJWwrn9a1U3_Saur-87" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="QGJw1FoXjFeknDLQSLWP-6">
           <mxGeometry relative="1" as="geometry" />
@@ -104,12 +109,26 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-98" parent="QGJw1FoXjFeknDLQSLWP-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="prêter sa voiture" vertex="1">
-          <mxGeometry height="30" width="100" x="110" y="320" as="geometry" />
+          <mxGeometry height="30" width="100" x="100" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-29" edge="1" parent="QGJw1FoXjFeknDLQSLWP-1" source="sTd90AnNK7yKBpfLzBgn-27" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="QGJw1FoXjFeknDLQSLWP-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-30" connectable="0" parent="sTd90AnNK7yKBpfLzBgn-29" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&quot;include&quot;" vertex="1">
+          <mxGeometry relative="1" x="-0.483" y="-3" as="geometry">
+            <mxPoint x="33" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-27" parent="QGJw1FoXjFeknDLQSLWP-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="consulter ses messages" vertex="1">
+          <mxGeometry height="50" width="80" x="50" y="180" as="geometry" />
         </mxCell>
         <mxCell id="QGJw1FoXjFeknDLQSLWP-45" edge="1" parent="1" source="QGJw1FoXjFeknDLQSLWP-3" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="QGJw1FoXjFeknDLQSLWP-30">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-82" edge="1" parent="1" source="QGJw1FoXjFeknDLQSLWP-3" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" target="ZafeQJWwrn9a1U3_Saur-81">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-28" edge="1" parent="1" source="QGJw1FoXjFeknDLQSLWP-3" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="sTd90AnNK7yKBpfLzBgn-27">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="QGJw1FoXjFeknDLQSLWP-3" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="User" vertex="1">
@@ -120,14 +139,6 @@
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-1" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=160;" value="Trajet" vertex="1">
           <mxGeometry height="350" width="480" x="150" y="620" as="geometry" />
-        </mxCell>
-        <mxCell id="ZafeQJWwrn9a1U3_Saur-8" edge="1" parent="ZafeQJWwrn9a1U3_Saur-1" source="ZafeQJWwrn9a1U3_Saur-10" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ZafeQJWwrn9a1U3_Saur-11">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="ZafeQJWwrn9a1U3_Saur-9" connectable="0" parent="ZafeQJWwrn9a1U3_Saur-8" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&quot;include&quot;" vertex="1">
-          <mxGeometry relative="1" x="-0.1062" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-21" edge="1" parent="ZafeQJWwrn9a1U3_Saur-1" source="ZafeQJWwrn9a1U3_Saur-10" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" target="ZafeQJWwrn9a1U3_Saur-18">
           <mxGeometry relative="1" as="geometry" />
@@ -156,9 +167,6 @@
         <mxCell id="ZafeQJWwrn9a1U3_Saur-10" parent="ZafeQJWwrn9a1U3_Saur-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="rejoindre un trajet commun" vertex="1">
           <mxGeometry height="40" width="80" x="70" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="ZafeQJWwrn9a1U3_Saur-11" parent="ZafeQJWwrn9a1U3_Saur-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="trajet commun existant" vertex="1">
-          <mxGeometry height="40" width="110" x="230" y="10" as="geometry" />
-        </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-24" edge="1" parent="ZafeQJWwrn9a1U3_Saur-1" source="ZafeQJWwrn9a1U3_Saur-14" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="ZafeQJWwrn9a1U3_Saur-23">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -183,11 +191,22 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-15" edge="1" parent="ZafeQJWwrn9a1U3_Saur-1" source="ZafeQJWwrn9a1U3_Saur-14" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="sTd90AnNK7yKBpfLzBgn-14" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-18" edge="1" parent="ZafeQJWwrn9a1U3_Saur-1" source="ZafeQJWwrn9a1U3_Saur-14" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="sTd90AnNK7yKBpfLzBgn-14" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-19" connectable="0" parent="sTd90AnNK7yKBpfLzBgn-18" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&quot;extends&quot;" vertex="1">
+          <mxGeometry relative="1" x="0.0123" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-14" parent="ZafeQJWwrn9a1U3_Saur-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="créer un trajet commun" vertex="1">
-          <mxGeometry height="60" width="60" x="60" y="220" as="geometry" />
+          <mxGeometry height="60" width="60" x="60" y="260" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-18" parent="ZafeQJWwrn9a1U3_Saur-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="&lt;div&gt;quitter le trajet&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="30" width="120" x="254" y="60" as="geometry" />
+          <mxGeometry height="30" width="120" x="196" y="10" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-23" parent="ZafeQJWwrn9a1U3_Saur-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="annuler le trajet" vertex="1">
           <mxGeometry height="30" width="100" x="193" y="200" as="geometry" />
@@ -196,13 +215,24 @@
           <mxGeometry height="40" width="106" x="187" y="240" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-41" parent="ZafeQJWwrn9a1U3_Saur-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="chercher les trajets reservé aux femmes" vertex="1">
-          <mxGeometry height="40" width="130" x="249" y="100" as="geometry" />
+          <mxGeometry height="40" width="130" x="210" y="50" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-45" parent="ZafeQJWwrn9a1U3_Saur-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="&lt;div&gt;chercher les trajets qui ont besoin d&#39;un conducteur&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="50" width="146" x="244" y="140" as="geometry" />
+          <mxGeometry height="50" width="120" x="204" y="110" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-48" parent="ZafeQJWwrn9a1U3_Saur-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="changer son rôle à passager" vertex="1">
           <mxGeometry height="40" width="106" x="187" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-14" parent="ZafeQJWwrn9a1U3_Saur-1" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="&lt;div&gt;communiquer avec&lt;/div&gt;&lt;div&gt;les autres&amp;nbsp;&lt;/div&gt;&lt;div&gt;membres&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="30" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-16" edge="1" parent="ZafeQJWwrn9a1U3_Saur-1" source="ZafeQJWwrn9a1U3_Saur-10" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.661;entryY=0.038;entryDx=0;entryDy=0;entryPerimeter=0;" target="sTd90AnNK7yKBpfLzBgn-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-17" connectable="0" parent="sTd90AnNK7yKBpfLzBgn-16" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&quot;extend&quot;" vertex="1">
+          <mxGeometry relative="1" x="-0.4441" y="-1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-15" edge="1" parent="1" source="ZafeQJWwrn9a1U3_Saur-16" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="ZafeQJWwrn9a1U3_Saur-14">
           <mxGeometry relative="1" as="geometry" />
@@ -214,7 +244,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-53" parent="1" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=160;" value="Espace Membre" vertex="1">
-          <mxGeometry height="370" width="490" x="150" y="1020" as="geometry" />
+          <mxGeometry height="370" width="495" x="150" y="1020" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-54" edge="1" parent="ZafeQJWwrn9a1U3_Saur-53" source="ZafeQJWwrn9a1U3_Saur-62" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ZafeQJWwrn9a1U3_Saur-63">
           <mxGeometry relative="1" as="geometry" />
@@ -256,23 +286,56 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-25" edge="1" parent="ZafeQJWwrn9a1U3_Saur-53" source="ZafeQJWwrn9a1U3_Saur-62" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="sTd90AnNK7yKBpfLzBgn-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-26" connectable="0" parent="sTd90AnNK7yKBpfLzBgn-25" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&quot;extends&quot;" vertex="1">
+          <mxGeometry relative="1" x="-0.0824" y="-4" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-62" parent="ZafeQJWwrn9a1U3_Saur-53" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="&lt;div&gt;Consulter&lt;/div&gt;&lt;div&gt;son espace membre&lt;/div&gt;" vertex="1">
-          <mxGeometry height="60" width="90" x="70" y="60" as="geometry" />
+          <mxGeometry height="60" width="90" x="20" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-6" edge="1" parent="ZafeQJWwrn9a1U3_Saur-53" source="ZafeQJWwrn9a1U3_Saur-63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="sTd90AnNK7yKBpfLzBgn-5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-7" connectable="0" parent="sTd90AnNK7yKBpfLzBgn-6" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&quot;extend&quot;" vertex="1">
+          <mxGeometry relative="1" x="-0.12" y="-2" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-12" edge="1" parent="ZafeQJWwrn9a1U3_Saur-53" source="ZafeQJWwrn9a1U3_Saur-63" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="sTd90AnNK7yKBpfLzBgn-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-13" connectable="0" parent="sTd90AnNK7yKBpfLzBgn-12" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&quot;extends&quot;" vertex="1">
+          <mxGeometry relative="1" x="0.0164" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-63" parent="ZafeQJWwrn9a1U3_Saur-53" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="modifier son profil" vertex="1">
-          <mxGeometry height="30" width="110" x="230" y="10" as="geometry" />
+          <mxGeometry height="30" width="110" x="164" y="20" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-71" parent="ZafeQJWwrn9a1U3_Saur-53" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="supprimer son profil" vertex="1">
-          <mxGeometry height="30" width="120" x="254" y="60" as="geometry" />
+          <mxGeometry height="30" width="120" x="190" y="80" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-74" parent="ZafeQJWwrn9a1U3_Saur-53" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="consulter son historique de trajet" vertex="1">
-          <mxGeometry height="40" width="130" x="249" y="100" as="geometry" />
+          <mxGeometry height="40" width="130" x="320" y="130" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-75" parent="ZafeQJWwrn9a1U3_Saur-53" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="créer un groupe de covoiturage" vertex="1">
-          <mxGeometry height="50" width="146" x="244" y="140" as="geometry" />
+          <mxGeometry height="50" width="146" x="191" y="290" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-109" parent="ZafeQJWwrn9a1U3_Saur-53" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="gérer sa flotte de véhicule" vertex="1">
-          <mxGeometry height="40" width="149" x="189" y="230" as="geometry" />
+          <mxGeometry height="30" width="151" x="10" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-5" parent="ZafeQJWwrn9a1U3_Saur-53" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="ajouter sa voiture" vertex="1">
+          <mxGeometry height="30" width="110" x="350" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-10" parent="ZafeQJWwrn9a1U3_Saur-53" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="changer ses préferences" vertex="1">
+          <mxGeometry height="40" width="110" x="360" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="sTd90AnNK7yKBpfLzBgn-23" parent="ZafeQJWwrn9a1U3_Saur-53" style="whiteSpace=wrap;html=1;verticalAlign=top;" value="&lt;div&gt;Consulter&lt;/div&gt;&lt;div&gt;sa&lt;/div&gt;&lt;div&gt;messagerie&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="90" x="214" y="170" as="geometry" />
         </mxCell>
         <mxCell id="ZafeQJWwrn9a1U3_Saur-78" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="User" vertex="1">
           <mxGeometry height="60" width="30" x="50" y="1160" as="geometry" />
