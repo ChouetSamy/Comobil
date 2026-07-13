@@ -1,0 +1,46 @@
+services:
+
+  app:
+    build:
+      context: ./docker/apache
+    container_name: comobil_app
+    volumes:
+      - ./backend:/var/www/html
+    working_dir: /var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend/Dockerfile
+    container_name: comobil_frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - app
+
+
+  db:
+    image: postgres:16
+    container_name: comobil_db
+    environment:
+      POSTGRES_DB: comobil
+      POSTGRES_USER: comobil
+      POSTGRES_PASSWORD: comobil
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+
+volumes:
+  db_data:
+

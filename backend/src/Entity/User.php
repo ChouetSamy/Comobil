@@ -26,7 +26,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var list<string> 
      */
-    #[ORM\Column (options: ['default' => 'TRAVELER'])]
+    #[ORM\Column ()]
     private array $roles = [];
 
     /**
@@ -38,7 +38,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $first_name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(lfength: 255)]
     private ?string $last_name = null;
 
     #[ORM\Column(length: 255)]
