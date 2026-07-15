@@ -8,6 +8,7 @@ composer create-project symfony/skeleton:"8.1.*" backend
 étape 2: installer les dépendances de symfony
 
 cd backend #on se déplace dans le dossier backend
+################################# dependance pour le backend
 composer require symfony/orm-pack #orm obligatoire pour générer les entité relation et les connecté au BDD
 #choisir non ou x à la configuration de docker par symfony
 composer require doctrine/doctrine-migrations-bundle #obligatoire pour le versionning des BDD
@@ -19,6 +20,8 @@ composer require symfony/maker-bundle --dev #pour pouvoir faire make:entity, le 
 composer require symfony/asset #pour pouvoir gérer les upload d'image
 composer require symfony/http-client #pour communiquer avec des api externe, nécessaire en cas de géolocalisation.
 composer require --dev doctrine/doctrine-fixtures-bundle #pour pouvoir entrer des données lors du lancement du site
+################################# dependance pour le frontend
+composer require nelmio/cors-bundle #sécurisé et communiquer avec react
 #################################Debug
 composer require --dev symfony/profiler-pack #équivalent avancé de l'inspecteur en navigation
 composer require --dev symfony/debug-bundle #permet d'utilisé dump and die dd() qui permet de débbuger plus précisement ce qu'il se passe
@@ -100,7 +103,7 @@ compose.yml
  /
 
 on contenairise le serveur web, objectif, facilités les installations in situ, garantir la stabilité de l'app
-pour cellà on va contenairisé apache, php, aussi pour pouvoir déployer le frontend, nous le contenairisons aussi, et enfin postgreSQL pour garantir la persistance des donnée
+pour cellà on va contenairisé apache, php, aussi pour pouvoir déployer le frontend, nous le contenairisons aussi et enfin postgreSQL pour garantir la persistance des donnée
 
 on commence par le compose.yml https://docs.docker.com/compose/
 
