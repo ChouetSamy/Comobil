@@ -6,10 +6,14 @@ use App\Repository\MoralEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\UuidTrait;
+
+#[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: MoralEntityRepository::class)]
 class MoralEntity
 {
+    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

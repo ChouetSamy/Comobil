@@ -5,10 +5,14 @@ namespace App\Entity;
 use App\Enum\Notification_Type;
 use App\Repository\NotificationRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\UuidTrait;
+
+#[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: NotificationRepository::class)]
 class Notification
 {
+    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

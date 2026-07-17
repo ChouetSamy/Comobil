@@ -6,10 +6,14 @@ use App\Enum\Traveler_Role;
 use App\Enum\Traveler_Status;
 use App\Repository\TravelerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\UuidTrait;
+
+#[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: TravelerRepository::class)]
 class Traveler
 {
+    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

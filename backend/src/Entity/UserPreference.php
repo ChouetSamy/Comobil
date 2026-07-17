@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\UserPreferenceRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\UuidTrait;
+
+#[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: UserPreferenceRepository::class)]
 class UserPreference

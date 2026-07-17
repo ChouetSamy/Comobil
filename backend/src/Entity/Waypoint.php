@@ -4,10 +4,13 @@ namespace App\Entity;
 
 use App\Repository\WaypointRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\UuidTrait;
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: WaypointRepository::class)]
 class Waypoint
 {
+     use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

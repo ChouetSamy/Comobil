@@ -5,10 +5,14 @@ namespace App\Entity;
 use App\Enum\Report_Status;
 use App\Repository\ReportRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\UuidTrait;
+
+#[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: ReportRepository::class)]
 class Report
 {
+    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

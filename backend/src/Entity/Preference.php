@@ -7,9 +7,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+use App\Entity\UuidTrait;
+
+#[ORM\HasLifecycleCallbacks]
+
 #[ORM\Entity(repositoryClass: PreferenceRepository::class)]
 class Preference
 {
+    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

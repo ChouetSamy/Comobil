@@ -4,10 +4,14 @@ namespace App\Entity;
 
 use App\Repository\GroupMemberRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\UuidTrait;
+
+#[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: GroupMemberRepository::class)]
 class GroupMember
 {
+    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

@@ -4,10 +4,14 @@ namespace App\Entity;
 
 use App\Repository\PostalCodeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\UuidTrait;
+
+#[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: PostalCodeRepository::class)]
 class PostalCode
 {
+    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

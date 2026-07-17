@@ -22,6 +22,7 @@ composer require symfony/http-client #pour communiquer avec des api externe, né
 composer require --dev doctrine/doctrine-fixtures-bundle #pour pouvoir entrer des données lors du lancement du site
 ################################# dependance pour le frontend
 composer require nelmio/cors-bundle #sécurisé et communiquer avec react
+composer require lexik/jwt-authentication-bundle #jwt token
 #################################Debug
 composer require --dev symfony/profiler-pack #équivalent avancé de l'inspecteur en navigation
 composer require --dev symfony/debug-bundle #permet d'utilisé dump and die dd() qui permet de débbuger plus précisement ce qu'il se passe

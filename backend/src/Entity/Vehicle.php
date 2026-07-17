@@ -5,13 +5,18 @@ namespace App\Entity;
 use App\Enum\Vehicle_State;
 use App\Repository\VehicleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\UuidTrait;
+
+#[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: VehicleRepository::class)]
 class Vehicle
 {
+    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'vehicles')]

@@ -9,45 +9,60 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\UuidTrait;
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_PHONE', fields: ['phone'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(options: ['default' => '0'])]
+    private int $tokenVersion = 0;
+
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private ?string $email = null;
 
     /**
      * @var list<string> 
      */
-    #[ORM\Column ()]
+    #[ORM\Column()]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\Length(min: 8)]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $first_name = null;
-
-    #[ORM\Column(lfength: 255)]
-    private ?string $last_name = null;
+    #[Assert\NotBlank]
+    private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    private ?string $lastName = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $phone = null;
 
     #[ORM\Column(enumType: Gender::class)]
+    #[Assert\NotBlank]
     private ?Gender $gender = null;
 
-    #[ORM\Column (options: ['default' => 'CURRENT_TIMESTAMP'])]
+    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(nullable: true)]
@@ -133,8 +148,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->author_reviews = new ArrayCollection();
         $this->reviews = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->tokenVersion = 0;
     }
 
+    public function getTokenVersion(): int
+    {
+        return $this->tokenVersion;
+    }
+
+    public function incrementTokenVersion(): void
+    {
+        $this->tokenVersion++;
+    }
 
 
     public function getId(): ?int
@@ -212,26 +237,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $data;
     }
 
-    public function getfirst_name(): ?string
+    public function getfirstName(): ?string
     {
-        return $this->first_name;
+        return $this->firstName;
     }
 
-    public function setfirst_name(string $first_name): static
+    public function setfirstName(string $firstName): static
     {
-        $this->first_name = $first_name;
+        $this->firstName = $firstName;
 
         return $this;
     }
 
-    public function getLast_name(): ?string
+    public function getLastName(): ?string
     {
-        return $this->last_name;
+        return $this->lastName;
     }
 
-    public function setLast_name(string $last_name): static
+    public function setLastName(string $lastName): static
     {
-        $this->last_name = $last_name;
+        $this->lastName = $lastName;
 
         return $this;
     }
