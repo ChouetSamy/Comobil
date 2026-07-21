@@ -140,3 +140,15 @@ services:
 
 volumes:
   db_data:                       # Déclaration du volume nommé pour la base
+
+
+
+
+##########################################
+Commande de vérification:
+docker compose exec app php bin/console about #version
+docker compose exec app php bin/console lint:container
+docker compose exec app php bin/console doctrine:schema:validate
+docker compose exec app php bin/console doctrine:migrations:status
+docker compose exec frontend npm run build #version
+docker compose exec frontend npm list --depth=0 #node module insatllé
