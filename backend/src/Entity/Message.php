@@ -17,12 +17,12 @@ class Message
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'sentMessages')]
+    #[ORM\ManyToOne(inversedBy: 'sent_messages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $sender = null;
 
     // CORRIGÉ : $receveir -> $receiver, et inversedBy doit correspondre au nom de la propriété dans User
-    #[ORM\ManyToOne(inversedBy: 'receivedMessages')] 
+    #[ORM\ManyToOne(inversedBy: 'received_messages')] 
     private ?User $receiver = null;
 
     #[ORM\Column(length: 255)]

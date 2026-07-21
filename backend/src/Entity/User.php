@@ -74,14 +74,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, MoralEntity>
      */
-    #[ORM\ManyToMany(targetEntity: MoralEntity::class, mappedBy: 'user_id')]
+    #[ORM\ManyToMany(targetEntity: MoralEntity::class, mappedBy: 'users')]
     private Collection $moralEntities;
 
     /**
      * @var Collection<int, Trip>
      */
-    #[ORM\OneToMany(targetEntity: Trip::class, mappedBy: 'creator_id')]
+    #[ORM\OneToMany(targetEntity: Trip::class, mappedBy: 'creator')]
     private Collection $trips;
+
+    /**
+     * @var Collection<int, Traveler>
+     */
+    #[ORM\OneToMany(targetEntity: Traveler::class, mappedBy: 'user')]
+    private Collection $travelers;
+
+    #[ORM\OneToMany(targetEntity: Fleet::class, mappedBy: 'user')]
+    private Collection $fleets;
 
     /**
      * @var Collection<int, UserPreference>
@@ -102,13 +111,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Message>
      */
-    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'receveir')]
-    private Collection $receveid_messages;
+    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'receiver', orphanRemoval: true)]
+    private Collection $received_messages;
 
     /**
      * @var Collection<int, Notification>
      */
-    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'receveir')]
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'receiver')]
     private Collection $notifications;
 
     /**
@@ -142,7 +151,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->trips = new ArrayCollection();
         $this->userPreferences = new ArrayCollection();
         $this->sent_messages = new ArrayCollection();
-        $this->receveid_messages = new ArrayCollection();
+        $this->received_messages = new ArrayCollection();
         $this->notifications = new ArrayCollection();
         $this->reports = new ArrayCollection();
         $this->author_reviews = new ArrayCollection();
@@ -438,27 +447,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Message>
      */
-    public function getReceveidMessages(): Collection
+    public function getReceivedMessages(): Collection
     {
-        return $this->receveid_messages;
+        return $this->received_messages;
     }
 
-    public function addReceveidMessage(Message $receveidMessage): static
+    public function addReceivedMessage(Message $receivedMessage): static
     {
-        if (!$this->receveid_messages->contains($receveidMessage)) {
-            $this->receveid_messages->add($receveidMessage);
-            $receveidMessage->setReceveir($this);
+        if (!$this->received_messages->contains($receivedMessage)) {
+            $this->received_messages->add($receivedMessage);
+            $receivedMessage->setReceiver($this);
         }
 
         return $this;
     }
 
-    public function removeReceveidMessage(Message $receveidMessage): static
+    public function removeReceivedMessage(Message $receivedMessage): static
     {
-        if ($this->receveid_messages->removeElement($receveidMessage)) {
+        if ($this->received_messages->removeElement($receivedMessage)) {
             // set the owning side to null (unless already changed)
-            if ($receveidMessage->getReceveir() === $this) {
-                $receveidMessage->setReceveir(null);
+            if ($receivedMessage->getReceiver() === $this) {
+                $receivedMessage->setReceiver(null);
             }
         }
 
@@ -477,7 +486,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->notifications->contains($notification)) {
             $this->notifications->add($notification);
-            $notification->setReceveir($this);
+            $notification->setReceiver($this);
         }
 
         return $this;
@@ -487,8 +496,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->notifications->removeElement($notification)) {
             // set the owning side to null (unless already changed)
-            if ($notification->getReceveir() === $this) {
-                $notification->setReceveir(null);
+            if ($notification->getReceiver() === $this) {
+                $notification->setReceiver(null);
             }
         }
 

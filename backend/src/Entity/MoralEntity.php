@@ -18,6 +18,7 @@ class MoralEntity
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+    
 
     /**
      * @var Collection<int, User>
@@ -50,7 +51,7 @@ class MoralEntity
     /**
      * @var Collection<int, Fleet>
      */
-    #[ORM\OneToMany(targetEntity: Fleet::class, mappedBy: 'moral_entity_id')]
+    #[ORM\OneToMany(targetEntity: Fleet::class, mappedBy: 'moral_entity')]
     private Collection $fleets;
 
     #[ORM\Column(length: 255)]
@@ -178,7 +179,7 @@ class MoralEntity
     {
         if (!$this->fleets->contains($fleet)) {
             $this->fleets->add($fleet);
-            $fleet->setMoralEntityId($this);
+            $fleet->setMoralEntity($this);
         }
         return $this;
     }
@@ -186,8 +187,8 @@ class MoralEntity
     public function removeFleet(Fleet $fleet): static
     {
         if ($this->fleets->removeElement($fleet)) {
-            if ($fleet->getMoralEntityId() === $this) {
-                $fleet->setMoralEntityId(null);
+            if ($fleet->getMoralEntity() === $this) {
+                $fleet->setMoralEntity(null);
             }
         }
         return $this;

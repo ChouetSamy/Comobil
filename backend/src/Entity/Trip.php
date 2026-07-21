@@ -87,6 +87,12 @@ class Trip
     private Collection $reviews;
 
     /**
+     * @var Collection<int, Message>
+     */
+    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'trip')]
+    private Collection $messages;
+
+    /**
      * @var Collection<int, Waypoint>
      */
     #[ORM\OneToMany(targetEntity: Waypoint::class, mappedBy: 'trip', orphanRemoval: true)]
@@ -112,6 +118,7 @@ class Trip
         $this->tripPreferences = new ArrayCollection();
         $this->travelers = new ArrayCollection();
         $this->reviews = new ArrayCollection();
+        $this->messages = new ArrayCollection();
         $this->waypoints = new ArrayCollection();
         $this->available_seats = 3;
         $this->trip_status = Trip_Status::PUBLISHED;
@@ -273,6 +280,35 @@ class Trip
     public function getWaypoints(): Collection
     {
         return $this->waypoints;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): static
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setTrip($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): static
+    {
+        if ($this->messages->removeElement($message)) {
+            if ($message->getTrip() === $this) {
+                $message->setTrip(null);
+            }
+        }
+
+        return $this;
     }
 
     public function addWaypoint(Waypoint $waypoint): static
