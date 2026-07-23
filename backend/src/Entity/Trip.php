@@ -48,6 +48,12 @@ class Trip
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * @var Collection<int, Notification>
+     */
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'trip')]
+    private Collection $notifications;
+
     #[ORM\ManyToOne(inversedBy: 'trips')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $creator = null;
@@ -160,6 +166,35 @@ class Trip
         return $this;
     }
 
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setTrip($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            if ($notification->getTrip() === $this) {
+                $notification->setTrip(null);
+            }
+        }
+
+        return $this;
+    }
     public function getAverageRating(): ?float
     {
         return $this->average_rating;

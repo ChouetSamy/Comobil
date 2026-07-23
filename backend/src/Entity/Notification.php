@@ -36,7 +36,7 @@ class Notification
     #[ORM\ManyToOne(inversedBy: 'notifications')]
     private ?User $receiver = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'notifications')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Trip $trip = null;
 
