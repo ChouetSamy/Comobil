@@ -4,15 +4,38 @@ namespace App\Entity;
 
 use App\Repository\TripPreferenceRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\UuidTrait;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+
+#[ApiResource(
+    operations: [
+        new Get(
+            security: "is_granted('TRIP_PREFERENCE_VIEW', object)"
+        ),
+        new GetCollection(
+            security: "is_granted('ROLE_USER')"
+        ),
+        new Post(
+            security: "is_granted('ROLE_USER')"
+        ),
+        new Patch(
+            security: "is_granted('TRIP_PREFERENCE_EDIT', object)"
+        ),
+        new Delete(
+            security: "is_granted('TRIP_PREFERENCE_EDIT', object)"
+        )
+    ]
+)]
 
 #[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: TripPreferenceRepository::class)]
 class TripPreference
-{
-     use UuidTrait;
-    #[ORM\Id]
+{    #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;

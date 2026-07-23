@@ -18,8 +18,9 @@ erDiagram
     user_info {
         bigint id PK "NOT NULL"
         bigint user_id FK "user.id, NOT NULL, INDEX"
-        bigint user_preference_id FK "user_preference.id, NOT NULL, INDEX"
+        bigint user_preference_id FK "user_preference.id, NULL, INDEX"
         bigint adress_id FK "adress.id, NULL"
+        bigint fleet_id "fleet.id, NULL"
         string picture_url "NULL"
         text bio "NULL"
         boolean accept_calls "NOT NULL, DEFAULT FALSE"
@@ -31,7 +32,7 @@ erDiagram
 
     user_preference {
         bigint id PK "NOT NULL"
-        bigint user_id FK "user.id, NOT NULL, INDEX"
+        bigint user_info_id FK "user.id, NOT NULL, INDEX"
         bigint preference_id FK "preference.id, NOT NULL, INDEX"
         boolean is_active "NOT NULL, DEFAULT TRUE"
     }
@@ -74,11 +75,6 @@ erDiagram
         datetime deleted_at "NULL"
     }
 
-    user_fleet{
-        bigint user_id FK "user.id, NULL, INDEX"
-        bigint fleet_id FK "fleet.id, NULL, INDEX"
-    }
-
     moral_entity_fleet{
         bigint moral_entity_id FK "moral_entity.id, NULL, INDEX"
         bigint fleet_id FK "fleet.id, NULL, INDEX"
@@ -96,8 +92,8 @@ erDiagram
     vehicle {
         bigint id PK "NOT NULL"
         bigint fleet_id FK "fleet.id, NOT NULL, INDEX"
-        boolean has_ac "NOT NULL, DEFAULT TRUE"
-        float consumption_liter_per_100km "NOT NULL"
+        boolean has_ac "NOT NULL"
+        float consumption_liter_per_100km "NULL"
         int seat "NOT NULL"
         enum vehicle_state "New, VeryGood, Good, Bad, Maintenance, NOT NULL"
         text description "NULL"

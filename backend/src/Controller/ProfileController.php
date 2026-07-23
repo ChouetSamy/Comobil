@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserInfo;
+use App\Repository\UserInfoRepository;
 use App\Enum\Gender;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,10 +12,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class ProfileController extends AbstractController
 {
     #[Route('/profile', name: 'profile_show', methods: ['GET'])]
+     #[IsGranted('ROLE_USER')]
     public function show(): JsonResponse
     {
         /** @var User|null $user */
@@ -27,7 +31,7 @@ class ProfileController extends AbstractController
         }
 
         return new JsonResponse([
-            'uuid' => $user->getUuid()->toRfc4122(),
+            'id' => $user->getId(),
             'email' => $user->getEmail(),
             'first_name' => $user->getFirstName(),
             'last_name' => $user->getLastName(),
@@ -40,6 +44,7 @@ class ProfileController extends AbstractController
 
 
     #[Route('/profile', name: 'profile_update', methods: ['PATCH'])]
+    #[IsGranted('ROLE_USER')]
     public function update(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -105,6 +110,7 @@ class ProfileController extends AbstractController
 
 
     #[Route('/profile', name: 'profile_delete', methods: ['DELETE'])]
+     #[IsGranted('ROLE_USER')]
     public function delete(
         EntityManagerInterface $entityManager
     ): JsonResponse {
@@ -123,6 +129,57 @@ class ProfileController extends AbstractController
 
         return new JsonResponse([
             'message' => 'Profile deleted'
+        ]);
+    }
+
+
+
+    #[Route('/profile', name: 'profile_info_update', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function upsert(
+        Request $request,
+        UserInfoRepository $userInfoRepository,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
+        $user = $this->getUser();
+
+        $data = json_decode($request->getContent(), true);
+
+        $userInfo = $userInfoRepository->findOneBy([
+            'user' => $user,
+        ]);
+
+        if (!$userInfo) {
+            $userInfo = new UserInfo();
+            $userInfo->setUser($user);
+        }
+
+        if (array_key_exists('picture_url', $data)) {
+            $userInfo->setPictureUrl($data['picture_url']);
+        }
+
+        if (array_key_exists('bio', $data)) {
+            $userInfo->setBio($data['bio']);
+        }
+
+        if (array_key_exists('accept_call', $data)) {
+            $userInfo->setAcceptCall($data['accept_call']);
+        }
+
+        $userInfo->setUpdatedAt(new \DateTime());
+
+        $entityManager->persist($userInfo);
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'UserInfo updated successfully',
+            'user_info' => [
+                'id' => $userInfo->getId(),
+                'picture_url' => $userInfo->getPictureUrl(),
+                'bio' => $userInfo->getBio(),
+                'accept_call' => $userInfo->isAcceptCall(),
+                'average_rating' => $userInfo->getAverageRating(),
+            ],
         ]);
     }
 }

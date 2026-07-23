@@ -4,9 +4,46 @@ namespace App\Entity;
 
 use App\Repository\UserPreferenceRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\UuidTrait;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\State\Processor\UserPreferenceProcessor;
+
+#[ApiResource(
+    operations: [
+        new Get(
+            security: "is_granted('USER_PREFERENCE_VIEW', object)"
+        ),
+        new GetCollection(
+            security: "is_granted('ROLE_USER')"
+        ),
+        new Post(
+            processor: UserPreferenceProcessor::class,
+            security: "is_granted('ROLE_USER')"
+        ),
+        new Patch(
+            processor: UserPreferenceProcessor::class,
+            security: "is_granted('USER_PREFERENCE_EDIT', object)"
+        ),
+        new Delete(
+            security: "is_granted('USER_PREFERENCE_EDIT', object)"
+        )
+    ]
+)]
 
 #[ORM\HasLifecycleCallbacks]
+#[ORM\Table(
+    uniqueConstraints: [
+        new ORM\UniqueConstraint(
+            name: 'unique_user_info_preference',
+            columns: ['user_info_id', 'preference_id']
+        )
+    ]
+)]
+
 
 #[ORM\Entity(repositoryClass: UserPreferenceRepository::class)]
 class UserPreference
@@ -15,6 +52,7 @@ class UserPreference
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'userPreferences')]
     #[ORM\JoinColumn(nullable: false)]
@@ -49,12 +87,12 @@ class UserPreference
         return $this;
     }
 
-    public function getPreferences(): ?Preference
+    public function getPreference(): ?Preference
     {
         return $this->preference;
     }
 
-    public function setPreferences(?Preference $preference): static
+    public function setPreference(?Preference $preference): static
     {
         $this->preference = $preference;
 
