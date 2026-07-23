@@ -29,6 +29,7 @@ security:
 
         api:
             pattern: ^/(api|profile)
+            
             stateless: true
             jwt: ~
 

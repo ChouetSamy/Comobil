@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Trip;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,45 @@ class TripRepository extends ServiceEntityRepository
         parent::__construct($registry, Trip::class);
     }
 
-    //    /**
-    //     * @return Trip[] Returns an array of Trip objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('t.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Retourne les trajets à venir auxquels l'utilisateur participe
+     * en tant que créateur ou voyageur.
+     *
+     * @return Trip[]
+     */
+    public function findUpcomingTripsForUser(User $user): array
+    {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.travelers', 'traveler')
+            ->andWhere(
+                't.creator = :user OR traveler.user = :user'
+            )
+            ->andWhere('t.departure_datetime >= :now')
+            ->setParameter('user', $user)
+            ->setParameter('now', new \DateTime())
+            ->orderBy('t.departure_datetime', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Trip
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Retourne les trajets passés auxquels l'utilisateur a participé
+     * en tant que créateur ou voyageur.
+     *
+     * @return Trip[]
+     */
+    public function findPastTripsForUser(User $user): array
+    {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.travelers', 'traveler')
+            ->andWhere(
+                't.creator = :user OR traveler.user = :user'
+            )
+            ->andWhere('t.departure_datetime < :now')
+            ->setParameter('user', $user)
+            ->setParameter('now', new \DateTime())
+            ->orderBy('t.departure_datetime', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -2,18 +2,29 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Enum\Traveler_Role;
 use App\Enum\Traveler_Status;
 use App\Repository\TravelerRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\UuidTrait;
 
+#[ApiResource(operations: [
+    new Get(security: "is_granted('ROLE_USER')"),
+    new GetCollection(security: "is_granted('ROLE_USER')"),
+    new Post(security: "is_granted('ROLE_USER')"),
+    new Patch(security: "is_granted('ROLE_USER')"),
+    new Delete(security: "is_granted('ROLE_USER')")
+])]
 #[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: TravelerRepository::class)]
 class Traveler
 {
-    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -35,6 +46,12 @@ class Traveler
 
     #[ORM\Column]
     private ?\DateTime $joined_at = null;
+
+    public function __construct()
+    {
+        $this->traveler_status = Traveler_Status::PENDING;
+        $this->joined_at = new \DateTime();
+    }
 
     public function getId(): ?int
     {

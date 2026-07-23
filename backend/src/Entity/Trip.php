@@ -2,6 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Enum\Trip_Creator_Role;
 use App\Enum\Trip_Status;
 use App\Repository\TripRepository;
@@ -9,14 +15,34 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\UuidTrait;
+use App\State\Provider\UserTripHistoryProvider;
+
+#[ApiResource(
+    operations: [
+        new Get(security: "is_granted('TRIP_VIEW', object)"),
+        new GetCollection(
+            uriTemplate: '/my-trips/upcoming',
+            provider: UserTripHistoryProvider::class,
+            security: "is_granted('ROLE_USER')",
+        ),
+
+        new GetCollection(
+            uriTemplate: '/my-trips/past',
+            provider: UserTripHistoryProvider::class,
+            security: "is_granted('ROLE_USER')",
+        ),
+        new Post(security: "is_granted('ROLE_USER')"),
+        new Patch(security: "is_granted('TRIP_EDIT', object)"),
+        new Delete(security: "is_granted('TRIP_DELETE', object)")
+    ]
+)]
+
 
 #[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: TripRepository::class)]
 class Trip
 {
-     use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,19 +50,19 @@ class Trip
 
     #[ORM\ManyToOne(inversedBy: 'trips')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $creator = null; 
+    private ?User $creator = null;
 
-    #[ORM\ManyToOne] 
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Vehicle $vehicle = null; 
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Adress $departureAddress = null; 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Vehicle $vehicle = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Adress $arrivalAddress = null; 
+    private ?Adress $departureAddress = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Adress $arrivalAddress = null;
 
     #[ORM\Column]
     private ?\DateTime $departure_datetime = null;
@@ -44,11 +70,6 @@ class Trip
     #[ORM\Column]
     private ?\DateTime $estimated_arrival_datetime = null;
 
-    #[ORM\Column]
-    private ?int $total_seat = null;
-
-    #[ORM\Column]
-    private ?int $available_seat = null;
 
     #[ORM\Column]
     private ?float $total_price = null;
@@ -59,8 +80,6 @@ class Trip
     #[ORM\Column]
     private ?float $average_rating = null;
 
-    #[ORM\Column]
-    private ?bool $is_women_only = null;
 
     #[ORM\Column(enumType: Trip_Status::class)]
     private ?Trip_Status $trip_status = null;
@@ -68,7 +87,7 @@ class Trip
     /**
      * @var Collection<int, TripPreference>
      */
-    #[ORM\OneToMany(targetEntity: TripPreference::class, mappedBy: 'trip')] 
+    #[ORM\OneToMany(targetEntity: TripPreference::class, mappedBy: 'trip')]
     private Collection $tripPreferences;
 
     /**
@@ -101,8 +120,6 @@ class Trip
     #[ORM\Column(options: ['default' => 3])]
     private ?int $available_seats = 3;
 
-    #[ORM\Column(enumType: Trip_Status::class, options: ['default' => 'PUBLISHED'])]
-    private ?Trip_Status $trip_status_default = null;
 
     #[ORM\Column(nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
@@ -122,7 +139,6 @@ class Trip
         $this->waypoints = new ArrayCollection();
         $this->available_seats = 3;
         $this->trip_status = Trip_Status::PUBLISHED;
-        $this->is_women_only = false;
         $this->created_at = new \DateTimeImmutable();
     }
 
@@ -141,6 +157,66 @@ class Trip
     public function setCreator(?User $creator): static
     {
         $this->creator = $creator;
+        return $this;
+    }
+
+    public function getAverageRating(): ?float
+    {
+        return $this->average_rating;
+    }
+
+    public function setAverageRating(float $average_rating): static
+    {
+        $this->average_rating = $average_rating;
+
+        return $this;
+    }
+
+    public function getDepartureDatetime(): ?\DateTime
+    {
+        return $this->departure_datetime;
+    }
+
+    public function setDepartureDatetime(\DateTime $departure_datetime): static
+    {
+        $this->departure_datetime = $departure_datetime;
+
+        return $this;
+    }
+
+    public function getTotalPrice(): ?float
+    {
+        return $this->total_price;
+    }
+
+    public function setTotalPrice(float $total_price): static
+    {
+        $this->total_price = $total_price;
+
+        return $this;
+    }
+
+    public function getPricePerPassenger(): ?float
+    {
+        return $this->price_per_passenger;
+    }
+
+    public function setPricePerPassenger(float $price_per_passenger): static
+    {
+        $this->price_per_passenger = $price_per_passenger;
+
+        return $this;
+    }
+
+    public function getEstimatedArrivalDatetime(): ?\DateTime
+    {
+        return $this->estimated_arrival_datetime;
+    }
+
+    public function setEstimatedArrivalDatetime(\DateTime $estimated_arrival_datetime): static
+    {
+        $this->estimated_arrival_datetime = $estimated_arrival_datetime;
+
         return $this;
     }
 

@@ -2,16 +2,31 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\MessageRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\UuidTrait;
 
+
+#[ApiResource(
+    operations: [
+        new Get(security: "is_granted('ROLE_USER')"),
+        new GetCollection(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_USER')"),
+        new Patch(security: "is_granted('ROLE_USER')"),
+        new Delete(security: "is_granted('ROLE_USER')")
+    ]
+)]
 #[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 class Message
 {
-    use UuidTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -22,7 +37,7 @@ class Message
     private ?User $sender = null;
 
     // CORRIGÉ : $receveir -> $receiver, et inversedBy doit correspondre au nom de la propriété dans User
-    #[ORM\ManyToOne(inversedBy: 'received_messages')] 
+    #[ORM\ManyToOne(inversedBy: 'received_messages')]
     private ?User $receiver = null;
 
     #[ORM\Column(length: 255)]
@@ -51,9 +66,9 @@ class Message
 
     public function __construct()
     {
-         $this->created_at = new \DateTimeImmutable();
-         $this->is_read = false;
-         $this->is_reported = false;
+        $this->created_at = new \DateTimeImmutable();
+        $this->is_read = false;
+        $this->is_reported = false;
     }
 
     public function getId(): ?int

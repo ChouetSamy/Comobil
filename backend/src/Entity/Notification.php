@@ -2,17 +2,32 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Enum\Notification_Type;
 use App\Repository\NotificationRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\UuidTrait;
 
+
+#[ApiResource(
+    operations: [
+        new Get(security: "is_granted('ROLE_USER')"),
+        new GetCollection(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_MODERATOR')"),
+        new Patch(security: "is_granted('ROLE_USER')"),
+        new Delete(security: "is_granted('ROLE_USER')")
+    ]
+)]
 #[ORM\HasLifecycleCallbacks]
 
 #[ORM\Entity(repositoryClass: NotificationRepository::class)]
 class Notification
 {
-    use UuidTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,8 +36,8 @@ class Notification
     #[ORM\ManyToOne(inversedBy: 'notifications')]
     private ?User $receiver = null;
 
-    // CORRIGÉ : $trips -> $trip (singulier)
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Trip $trip = null;
 
     #[ORM\Column(length: 255)]
@@ -34,7 +49,7 @@ class Notification
     #[ORM\Column(enumType: Notification_Type::class, options: ['default' => 'PERSONNAL'])]
     private ?Notification_Type $notification_type = null;
 
-    
+
     #[ORM\Column(nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
 
@@ -44,7 +59,7 @@ class Notification
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
-        $this->is_read = false; 
+        $this->is_read = false;
         $this->notification_type = Notification_Type::PERSONNAL;
     }
 

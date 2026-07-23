@@ -2,6 +2,14 @@
 
 namespace App\Entity;
 
+
+use Symfony\Component\Serializer\Attribute\Groups;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Enum\Gender;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,8 +18,29 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\UuidTrait;
 
+
+#[ApiResource(
+    operations: [
+        new Get(
+            security: "is_granted('ROLE_USER')"
+        ),
+        new GetCollection(
+            security: "is_granted('ROLE_ADMIN')"
+        ),
+        new Post(
+            security: "is_granted('PUBLIC_ACCESS')"
+        ),
+        new Patch(
+            security: "is_granted('ROLE_USER') and object == user"
+        ),
+        new Delete(
+            security: "is_granted('ROLE_USER') and object == user"
+        )
+    ],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']],
+)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -19,18 +48,22 @@ use App\Entity\UuidTrait;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_PHONE', fields: ['phone'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    use UuidTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
+
+    
 
     #[ORM\Column(options: ['default' => '0'])]
     private int $tokenVersion = 0;
 
+
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank]
     #[Assert\Email]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     /**
@@ -48,18 +81,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $phone = null;
 
     #[ORM\Column(enumType: Gender::class)]
     #[Assert\NotBlank]
+    #[Groups(['user:read', 'user:write'])]
     private ?Gender $gender = null;
 
     #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
@@ -89,14 +126,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Traveler::class, mappedBy: 'user')]
     private Collection $travelers;
 
-    #[ORM\OneToMany(targetEntity: Fleet::class, mappedBy: 'user')]
-    private Collection $fleets;
 
-    /**
-     * @var Collection<int, UserPreference>
-     */
-    #[ORM\OneToMany(targetEntity: UserPreference::class, mappedBy: 'userInfo')]
-    private Collection $userPreferences;
 
 
     #[ORM\OneToOne(targetEntity: UserInfo::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
@@ -149,7 +179,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->created_at = new \DateTimeImmutable();
         $this->moralEntities = new ArrayCollection();
         $this->trips = new ArrayCollection();
-        $this->userPreferences = new ArrayCollection();
         $this->sent_messages = new ArrayCollection();
         $this->received_messages = new ArrayCollection();
         $this->notifications = new ArrayCollection();
@@ -184,6 +213,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getUserInfo(): ?UserInfo
+    {
+        return $this->userInfo;
+    }
+
+    public function setUserInfo(?UserInfo $userInfo): static
+    {
+        if ($userInfo === null && $this->userInfo !== null) {
+            $this->userInfo->setUser(null);
+        }
+
+        if ($userInfo !== null && $userInfo->getUser() !== $this) {
+            $userInfo->setUser($this);
+        }
+
+        $this->userInfo = $userInfo;
 
         return $this;
     }
@@ -387,32 +436,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, UserPreference>
-     */
-    public function getUserPreferences(): Collection
-    {
-        return $this->userPreferences;
-    }
-
-    public function addUserPreference(UserPreference $userPreference): static
-    {
-        if (!$this->userPreferences->contains($userPreference)) {
-            $this->userPreferences->add($userPreference);
-            $userPreference->setUserInfo($this->userInfo);
-        }
-        return $this;
-    }
-    public function removeUserPreference(UserPreference $userPreference): static
-    {
-        if ($this->userPreferences->removeElement($userPreference)) {
-            if ($userPreference->getUserInfo() === $this) {
-                $userPreference->setUserInfo(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Message>
