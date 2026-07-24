@@ -32,31 +32,31 @@ class Message
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'sent_messages')]
+    #[ORM\ManyToOne(inversedBy: 'sentMessages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $sender = null;
 
     // CORRIGÉ : $receveir -> $receiver, et inversedBy doit correspondre au nom de la propriété dans User
-    #[ORM\ManyToOne(inversedBy: 'received_messages')]
+    #[ORM\ManyToOne(inversedBy: 'receivedMessages')]
     private ?User $receiver = null;
 
     #[ORM\Column(length: 255)]
     private ?string $content = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $is_read = null;
+    private ?bool $isRead = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $is_reported = null;
+    private ?bool $isReported = null;
 
     #[ORM\Column(nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updated_at = null;
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $deleted_at = null;
+    private ?\DateTime $deletedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
     private ?Group $group = null;
@@ -66,9 +66,9 @@ class Message
 
     public function __construct()
     {
-        $this->created_at = new \DateTimeImmutable();
-        $this->is_read = false;
-        $this->is_reported = false;
+        $this->createdAt = new \DateTimeImmutable();
+        $this->isRead = false;
+        $this->isReported = false;
     }
 
     public function getId(): ?int
@@ -111,56 +111,56 @@ class Message
 
     public function isRead(): ?bool
     {
-        return $this->is_read;
+        return $this->isRead;
     }
 
-    public function setIsRead(bool $is_read): static
+    public function setIsRead(bool $isRead): static
     {
-        $this->is_read = $is_read;
+        $this->isRead = $isRead;
         return $this;
     }
 
     public function isReported(): ?bool
     {
-        return $this->is_reported;
+        return $this->isReported;
     }
 
-    public function setIsReported(bool $is_reported): static
+    public function setIsReported(bool $isReported): static
     {
-        $this->is_reported = $is_reported;
+        $this->isReported = $isReported;
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTime
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updated_at): static
+    public function setUpdatedAt(?\DateTime $updatedAt): static
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 
     public function getDeletedAt(): ?\DateTime
     {
-        return $this->deleted_at;
+        return $this->deletedAt;
     }
 
-    public function setDeletedAt(?\DateTime $deleted_at): static
+    public function setDeletedAt(?\DateTime $deletedAt): static
     {
-        $this->deleted_at = $deleted_at;
+        $this->deletedAt = $deletedAt;
         return $this;
     }
 

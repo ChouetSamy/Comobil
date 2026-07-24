@@ -44,23 +44,23 @@ class Notification
     private ?string $content = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $is_read = null;
+    private ?bool $isRead = null;
 
     #[ORM\Column(enumType: Notification_Type::class, options: ['default' => 'PERSONNAL'])]
-    private ?Notification_Type $notification_type = null;
+    private ?Notification_Type $notificationType = null;
 
 
     #[ORM\Column(nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updated_at = null;
+    private ?\DateTime $updatedAt = null;
 
     public function __construct()
     {
-        $this->created_at = new \DateTimeImmutable();
-        $this->is_read = false;
-        $this->notification_type = Notification_Type::PERSONNAL;
+        $this->createdAt = new \DateTimeImmutable();
+        $this->isRead = false;
+        $this->notificationType = Notification_Type::PERSONNAL;
     }
 
     public function getId(): ?int
@@ -103,45 +103,45 @@ class Notification
 
     public function isRead(): ?bool
     {
-        return $this->is_read;
+        return $this->isRead;
     }
 
-    public function setIsRead(bool $is_read): static
+    public function setIsRead(bool $isRead): static
     {
-        $this->is_read = $is_read;
+        $this->isRead = $isRead;
         return $this;
     }
 
     public function getNotificationType(): ?Notification_Type
     {
-        return $this->notification_type;
+        return $this->notificationType;
     }
 
-    public function setNotificationType(Notification_Type $notification_type): static
+    public function setNotificationType(Notification_Type $notificationType): static
     {
-        $this->notification_type = $notification_type;
+        $this->notificationType = $notificationType;
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTime
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updated_at): static
+    public function setUpdatedAt(?\DateTime $updatedAt): static
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 }

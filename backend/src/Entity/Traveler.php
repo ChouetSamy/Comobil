@@ -11,12 +11,30 @@ use ApiPlatform\Metadata\Post;
 use App\Enum\Traveler_Role;
 use App\Enum\Traveler_Status;
 use App\Repository\TravelerRepository;
+use App\State\Processor\TravelerProcessor;
+use App\State\Processor\TravelerExclusionProcessor;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(operations: [
     new Get(security: "is_granted('ROLE_USER')"),
     new GetCollection(security: "is_granted('ROLE_USER')"),
-    new Post(security: "is_granted('ROLE_USER')"),
+    new Post(
+        security: "is_granted('ROLE_USER')",
+        processor: TravelerProcessor::class
+    ),
+    new Post(
+        uriTemplate: '/travelers/{id}/exclude',
+        uriVariables: ['id'],
+        security: "is_granted('ROLE_USER')",
+        processor: TravelerExclusionProcessor::class
+    ),
+    new Patch(
+        uriTemplate: '/travelers/{id}/exclude',
+        uriVariables: ['id'],
+        security: "is_granted('ROLE_USER')",
+        processor: TravelerExclusionProcessor::class,
+    ),
     new Patch(security: "is_granted('ROLE_USER')"),
     new Delete(security: "is_granted('ROLE_USER')")
 ])]
@@ -30,27 +48,32 @@ class Traveler
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotNull]
     #[ORM\ManyToOne(inversedBy: 'travelers')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Trip $trip = null;
 
+    #[Assert\NotNull]
     #[ORM\ManyToOne(inversedBy: 'travelers')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    #[Assert\NotNull]
     #[ORM\Column(enumType: Traveler_Role::class)]
-    private ?Traveler_Role $traveler_role = null;
+    private ?Traveler_Role $travelerRole = null;
 
+    #[Assert\NotNull]
     #[ORM\Column(enumType: Traveler_Status::class, options: ['default' => 'PENDING'])]
-    private ?Traveler_Status $traveler_status = null;
+    private ?Traveler_Status $travelerStatus = null;
 
+    #[Assert\NotNull]
     #[ORM\Column]
-    private ?\DateTime $joined_at = null;
+    private ?\DateTime $joinedAt = null;
 
     public function __construct()
     {
-        $this->traveler_status = Traveler_Status::PENDING;
-        $this->joined_at = new \DateTime();
+        $this->travelerStatus = Traveler_Status::PENDING;
+        $this->joinedAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -72,36 +95,36 @@ class Traveler
 
     public function getTravelerRole(): ?Traveler_Role
     {
-        return $this->traveler_role;
+        return $this->travelerRole;
     }
 
-    public function setTravelerRole(Traveler_Role $traveler_role): static
+    public function setTravelerRole(Traveler_Role $travelerRole): static
     {
-        $this->traveler_role = $traveler_role;
+        $this->travelerRole = $travelerRole;
 
         return $this;
     }
 
     public function getTravelerStatus(): ?Traveler_Status
     {
-        return $this->traveler_status;
+        return $this->travelerStatus;
     }
 
-    public function setTravelerStatus(Traveler_Status $traveler_status): static
+    public function setTravelerStatus(Traveler_Status $travelerStatus): static
     {
-        $this->traveler_status = $traveler_status;
+        $this->travelerStatus = $travelerStatus;
 
         return $this;
     }
 
     public function getJoinedAt(): ?\DateTime
     {
-        return $this->joined_at;
+        return $this->joinedAt;
     }
 
-    public function setJoinedAt(\DateTime $joined_at): static
+    public function setJoinedAt(\DateTime $joinedAt): static
     {
-        $this->joined_at = $joined_at;
+        $this->joinedAt = $joinedAt;
 
         return $this;
     }

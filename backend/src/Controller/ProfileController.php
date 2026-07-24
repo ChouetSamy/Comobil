@@ -33,12 +33,12 @@ class ProfileController extends AbstractController
         return new JsonResponse([
             'id' => $user->getId(),
             'email' => $user->getEmail(),
-            'first_name' => $user->getFirstName(),
-            'last_name' => $user->getLastName(),
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
             'phone' => $user->getPhone(),
             'gender' => $user->getGender()?->value,
             'roles' => $user->getRoles(),
-            'created_at' => $user->getCreatedAt()?->format('Y-m-d H:i:s'),
+            'createdAt' => $user->getCreatedAt()?->format('Y-m-d H:i:s'),
         ]);
     }
 
@@ -67,12 +67,12 @@ class ProfileController extends AbstractController
             ], 400);
         }
 
-        if (isset($data['first_name'])) {
-            $user->setFirstName($data['first_name']);
+        if (isset($data['firstName'])) {
+            $user->setFirstName($data['firstName']);
         }
 
-        if (isset($data['last_name'])) {
-            $user->setLastName($data['last_name']);
+        if (isset($data['lastName'])) {
+            $user->setLastName($data['lastName']);
         }
 
         if (isset($data['phone'])) {
@@ -173,12 +173,12 @@ class ProfileController extends AbstractController
 
         return $this->json([
             'message' => 'UserInfo updated successfully',
-            'user_info' => [
+            'userInfo' => [
                 'id' => $userInfo->getId(),
-                'picture_url' => $userInfo->getPictureUrl(),
+                'pictureUrl' => $userInfo->getPictureUrl(),
                 'bio' => $userInfo->getBio(),
-                'accept_call' => $userInfo->isAcceptCall(),
-                'average_rating' => $userInfo->getAverageRating(),
+                'acceptCall' => $userInfo->isAcceptCall(),
+                'averageRating' => $userInfo->getAverageRating(),
             ],
         ]);
     }

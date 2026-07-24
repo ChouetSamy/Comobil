@@ -3,6 +3,7 @@
 namespace App\Security\Voter;
 
 use App\Entity\Trip;
+use App\Enum\Trip_Status;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -48,6 +49,10 @@ final class TripVoter extends Voter
 
         /** @var Trip $trip */
         $trip = $subject;
+
+        if ($trip->getTripStatus() === Trip_Status::CANCELLED) {
+            return false;
+        }
 
         return match ($attribute) {
             self::VIEW => true,

@@ -23,6 +23,17 @@ curl -X POST http://localhost:8080/register \
     "gender": "MALE"
   }'
 
+curl -i -X POST http://localhost:8080/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "female@comobil.local",
+    "password": "Test1234!",
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "phone": "0600000002",
+    "gender": "FEMALE"
+  }'
+
 /connexion :
 #pour se facilité la vie on utilise jq, il enregistre le token pour nous, c'est plus facile de le réutiliser ensuite.
 
@@ -35,6 +46,12 @@ TOKEN=$(curl -s -X POST http://localhost:8080/login \
 
 echo "$TOKEN" #vérifie que le token est bien présent, et est le même.
 
+TOKEN_FEMALE=$(curl -s -X POST http://localhost:8080/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "female@comobil.local",
+    "password": "Test1234!"
+  }' | jq -r '.token')
 
 /test du provider user_infos
 
@@ -71,3 +88,8 @@ curl -X GET http://localhost:8080/user_infos \
     "tripCreatorRole": "DRIVER",
     "availableSeats": 3
   }'
+
+curl -X POST http://localhost:8080/api/travelers/1/exclude \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/ld+json" \
+  -d '{}' | jq

@@ -51,11 +51,11 @@ class TripPreference
     private ?Preference $preference = null;
 
     #[ORM\Column(options: ['default' => true])]
-    private ?bool $is_active = true;
+    private ?bool $isActive = true;
 
     public function __construct()
     {
-        $this->is_active = true;
+        $this->isActive = true;
     }
 
     public function getId(): ?int
@@ -89,12 +89,12 @@ class TripPreference
 
     public function isActive(): ?bool
     {
-        return $this->is_active;
+        return $this->isActive;
     }
 
-    public function setIsActive(bool $is_active): static
+    public function setIsActive(bool $isActive): static
     {
-        $this->is_active = $is_active;
+        $this->isActive = $isActive;
         return $this;
     }
 }

@@ -66,28 +66,28 @@ class UserInfo
     private ?Fleet $fleet = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $picture_url = null;
+    private ?string $pictureUrl = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $bio = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $accept_call = null;
+    private ?bool $acceptCall = null;
 
     #[ORM\Column(
         nullable: true,
         options: ['default' => 0]
     )]
-    private ?float $average_rating = null;
+    private ?float $averageRating = null;
 
     #[ORM\Column(
         nullable: false,
         options: ['default' => 'CURRENT_TIMESTAMP']
     )]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updated_at = null;
+    private ?\DateTime $updatedAt = null;
 
     /**
      * @var Collection<int, UserPreference>
@@ -102,9 +102,9 @@ class UserInfo
     public function __construct()
     {
         $this->userPreferences = new ArrayCollection();
-        $this->accept_call = false;
-        $this->average_rating = 0.0;
-        $this->created_at = new \DateTimeImmutable();
+        $this->acceptCall = false;
+        $this->averageRating = 0.0;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
 
@@ -156,12 +156,12 @@ class UserInfo
 
     public function getPictureUrl(): ?string
     {
-        return $this->picture_url;
+        return $this->pictureUrl;
     }
 
-    public function setPictureUrl(?string $picture_url): static
+    public function setPictureUrl(?string $pictureUrl): static
     {
-        $this->picture_url = $picture_url;
+        $this->pictureUrl = $pictureUrl;
 
         return $this;
     }
@@ -182,12 +182,12 @@ class UserInfo
 
     public function isAcceptCall(): ?bool
     {
-        return $this->accept_call;
+        return $this->acceptCall;
     }
 
-    public function setAcceptCall(bool $accept_call): static
+    public function setAcceptCall(bool $acceptCall): static
     {
-        $this->accept_call = $accept_call;
+        $this->acceptCall = $acceptCall;
 
         return $this;
     }
@@ -195,12 +195,12 @@ class UserInfo
 
     public function getAverageRating(): ?float
     {
-        return $this->average_rating;
+        return $this->averageRating;
     }
 
-    public function setAverageRating(?float $average_rating): static
+    public function setAverageRating(?float $averageRating): static
     {
-        $this->average_rating = $average_rating;
+        $this->averageRating = $averageRating;
 
         return $this;
     }
@@ -208,13 +208,13 @@ class UserInfo
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
     public function setCreatedAt(
-        \DateTimeImmutable $created_at
+        \DateTimeImmutable $createdAt
     ): static {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -222,12 +222,12 @@ class UserInfo
 
     public function getUpdatedAt(): ?\DateTime
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updated_at): static
+    public function setUpdatedAt(?\DateTime $updatedAt): static
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
