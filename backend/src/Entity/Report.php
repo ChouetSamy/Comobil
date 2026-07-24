@@ -42,18 +42,18 @@ class Report
     private ?string $description = null;
 
     #[ORM\Column(enumType: Report_Status::class)]
-    private ?Report_Status $report_status = null;
+    private ?Report_Status $reportStatus = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $moderator_notes = null;
+    private ?string $moderatorNotes = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     public function __construct()
     {
-        $this->created_at = new \DateTimeImmutable();
-        $this->report_status = Report_Status::PENDING;
+        $this->createdAt = new \DateTimeImmutable();
+        $this->reportStatus = Report_Status::PENDING;
     }
 
     public function getId(): ?int
@@ -111,36 +111,36 @@ class Report
 
     public function getReportStatus(): ?Report_Status
     {
-        return $this->report_status;
+        return $this->reportStatus;
     }
 
-    public function setReportStatus(Report_Status $report_status): static
+    public function setReportStatus(Report_Status $reportStatus): static
     {
-        $this->report_status = $report_status;
+        $this->reportStatus = $reportStatus;
 
         return $this;
     }
 
     public function getModeratorNotes(): ?string
     {
-        return $this->moderator_notes;
+        return $this->moderatorNotes;
     }
 
-    public function setModeratorNotes(?string $moderator_notes): static
+    public function setModeratorNotes(?string $moderatorNotes): static
     {
-        $this->moderator_notes = $moderator_notes;
+        $this->moderatorNotes = $moderatorNotes;
 
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }

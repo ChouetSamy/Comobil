@@ -27,7 +27,7 @@ class Review
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'author_reviews')]
+    #[ORM\ManyToOne(inversedBy: 'authorReviews')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 
@@ -38,24 +38,24 @@ class Review
     private ?Trip $trip = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $is_reported = null;
+    private ?bool $isReported = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $comment = null;
 
     #[ORM\Column(nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updated_at = null;
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $deleted_at = null;
+    private ?\DateTime $deletedAt = null;
 
     public function __construct()
     {
-        $this->is_reported = false;
-        $this->created_at = new \DateTimeImmutable();
+        $this->isReported = false;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -101,12 +101,12 @@ class Review
 
     public function isReported(): ?bool
     {
-        return $this->is_reported;
+        return $this->isReported;
     }
 
-    public function setIsReported(bool $is_reported): static
+    public function setIsReported(bool $isReported): static
     {
-        $this->is_reported = $is_reported;
+        $this->isReported = $isReported;
 
         return $this;
     }
@@ -125,36 +125,36 @@ class Review
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTime
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updated_at): static
+    public function setUpdatedAt(?\DateTime $updatedAt): static
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
     public function getDeletedAt(): ?\DateTime
     {
-        return $this->deleted_at;
+        return $this->deletedAt;
     }
 
-    public function setDeletedAt(?\DateTime $deleted_at): static
+    public function setDeletedAt(?\DateTime $deletedAt): static
     {
-        $this->deleted_at = $deleted_at;
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }

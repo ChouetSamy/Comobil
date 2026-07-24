@@ -31,7 +31,7 @@ class GroupMember
     private ?Group $groups = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $joined_at = null;
+    private ?\DateTimeImmutable $joinedAt = null;
 
     public function getId(): ?int
     {
@@ -52,12 +52,12 @@ class GroupMember
 
     public function getJoinedAt(): ?\DateTimeImmutable
     {
-        return $this->joined_at;
+        return $this->joinedAt;
     }
 
-    public function setJoinedAt(\DateTimeImmutable $joined_at): static
+    public function setJoinedAt(\DateTimeImmutable $joinedAt): static
     {
-        $this->joined_at = $joined_at;
+        $this->joinedAt = $joinedAt;
 
         return $this;
     }

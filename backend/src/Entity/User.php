@@ -100,13 +100,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Gender $gender = null;
 
     #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updated_at = null;
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $deleted_at = null;
+    private ?\DateTime $deletedAt = null;
 
     /**
      * @var Collection<int, MoralEntity>
@@ -136,13 +136,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Message>
      */
     #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'sender', orphanRemoval: true)]
-    private Collection $sent_messages;
+    private Collection $sentMessages;
 
     /**
      * @var Collection<int, Message>
      */
     #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'receiver', orphanRemoval: true)]
-    private Collection $received_messages;
+    private Collection $receivedMessages;
 
     /**
      * @var Collection<int, Notification>
@@ -160,7 +160,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Review>
      */
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'author')]
-    private Collection $author_reviews;
+    private Collection $authorReviews;
 
     /**
      * @var Collection<int, Review>
@@ -174,19 +174,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'creator')]
     private Collection $groups;
 
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class)]
+    private Collection $blockedUsers;
+
     public function __construct()
     {
-        $this->created_at = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
         $this->moralEntities = new ArrayCollection();
         $this->trips = new ArrayCollection();
-        $this->sent_messages = new ArrayCollection();
-        $this->received_messages = new ArrayCollection();
+        $this->sentMessages = new ArrayCollection();
+        $this->receivedMessages = new ArrayCollection();
         $this->notifications = new ArrayCollection();
         $this->reports = new ArrayCollection();
-        $this->author_reviews = new ArrayCollection();
+        $this->authorReviews = new ArrayCollection();
         $this->reviews = new ArrayCollection();
         $this->groups = new ArrayCollection();
         $this->tokenVersion = 0;
+        $this->blockedUsers = new ArrayCollection();
     }
 
     public function getTokenVersion(): int
@@ -345,36 +352,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTime
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updated_at): static
+    public function setUpdatedAt(?\DateTime $updatedAt): static
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
     public function getDeletedAt(): ?\DateTime
     {
-        return $this->deleted_at;
+        return $this->deletedAt;
     }
 
-    public function setDeletedAt(?\DateTime $deleted_at): static
+    public function setDeletedAt(?\DateTime $deletedAt): static
     {
-        $this->deleted_at = $deleted_at;
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }
@@ -442,13 +449,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getSentMessages(): Collection
     {
-        return $this->sent_messages;
+        return $this->sentMessages;
     }
 
     public function addSentMessage(Message $sentMessage): static
     {
-        if (!$this->sent_messages->contains($sentMessage)) {
-            $this->sent_messages->add($sentMessage);
+        if (!$this->sentMessages->contains($sentMessage)) {
+            $this->sentMessages->add($sentMessage);
             $sentMessage->setSender($this);
         }
 
@@ -457,7 +464,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeSentMessage(Message $sentMessage): static
     {
-        if ($this->sent_messages->removeElement($sentMessage)) {
+        if ($this->sentMessages->removeElement($sentMessage)) {
             // set the owning side to null (unless already changed)
             if ($sentMessage->getSender() === $this) {
                 $sentMessage->setSender(null);
@@ -472,13 +479,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getReceivedMessages(): Collection
     {
-        return $this->received_messages;
+        return $this->receivedMessages;
     }
 
     public function addReceivedMessage(Message $receivedMessage): static
     {
-        if (!$this->received_messages->contains($receivedMessage)) {
-            $this->received_messages->add($receivedMessage);
+        if (!$this->receivedMessages->contains($receivedMessage)) {
+            $this->receivedMessages->add($receivedMessage);
             $receivedMessage->setReceiver($this);
         }
 
@@ -487,7 +494,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeReceivedMessage(Message $receivedMessage): static
     {
-        if ($this->received_messages->removeElement($receivedMessage)) {
+        if ($this->receivedMessages->removeElement($receivedMessage)) {
             // set the owning side to null (unless already changed)
             if ($receivedMessage->getReceiver() === $this) {
                 $receivedMessage->setReceiver(null);
@@ -562,13 +569,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getAuthorReviews(): Collection
     {
-        return $this->author_reviews;
+        return $this->authorReviews;
     }
 
     public function addAuthorReview(Review $authorReview): static
     {
-        if (!$this->author_reviews->contains($authorReview)) {
-            $this->author_reviews->add($authorReview);
+        if (!$this->authorReviews->contains($authorReview)) {
+            $this->authorReviews->add($authorReview);
             $authorReview->setAuthor($this);
         }
 
@@ -577,7 +584,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeAuthorReview(Review $authorReview): static
     {
-        if ($this->author_reviews->removeElement($authorReview)) {
+        if ($this->authorReviews->removeElement($authorReview)) {
             // set the owning side to null (unless already changed)
             if ($authorReview->getAuthor() === $this) {
                 $authorReview->setAuthor(null);
@@ -640,6 +647,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->groups->removeElement($group)) {
             $group->removeCreator($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getBlockedUsers(): Collection
+    {
+        return $this->blockedUsers;
+    }
+
+    public function addBlockedUser(self $blockedUser): static
+    {
+        if (!$this->blockedUsers->contains($blockedUser)) {
+            $this->blockedUsers->add($blockedUser);
+        }
+
+        return $this;
+    }
+
+    public function removeBlockedUser(self $blockedUser): static
+    {
+        $this->blockedUsers->removeElement($blockedUser);
 
         return $this;
     }

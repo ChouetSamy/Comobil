@@ -62,7 +62,7 @@ class Fleet
     #[ORM\ManyToOne(
         inversedBy: 'fleets'
     )]
-    private ?MoralEntity $moral_entity = null;
+    private ?MoralEntity $moralEntity = null;
 
     /**
      * @var Collection<int, Vehicle>
@@ -86,16 +86,16 @@ class Fleet
         nullable: false,
         options: ['default' => 'CURRENT_TIMESTAMP']
     )]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updated_at = null;
+    private ?\DateTime $updatedAt = null;
 
 
     public function __construct()
     {
         $this->vehicles = new ArrayCollection();
-        $this->created_at = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
 
@@ -127,13 +127,13 @@ class Fleet
 
     public function getMoralEntity(): ?MoralEntity
     {
-        return $this->moral_entity;
+        return $this->moralEntity;
     }
 
     public function setMoralEntity(
-        ?MoralEntity $moral_entity
+        ?MoralEntity $moralEntity
     ): static {
-        $this->moral_entity = $moral_entity;
+        $this->moralEntity = $moralEntity;
 
         return $this;
     }
@@ -212,13 +212,13 @@ class Fleet
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
     public function setCreatedAt(
-        \DateTimeImmutable $created_at
+        \DateTimeImmutable $createdAt
     ): static {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -226,12 +226,12 @@ class Fleet
 
     public function getUpdatedAt(): ?\DateTime
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updated_at): static
+    public function setUpdatedAt(?\DateTime $updatedAt): static
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

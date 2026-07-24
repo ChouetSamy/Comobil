@@ -10,16 +10,27 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Enum\Trip_Creator_Role;
 use App\Enum\Trip_Status;
+use App\State\Processor\TripDeleteProcessor;
+use App\State\Provider\UserTripHistoryProvider;
+use App\State\Provider\TripSearchProvider;
 use App\Repository\TripRepository;
+use App\State\Processor\TripUpdateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\State\Provider\UserTripHistoryProvider;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
+        new GetCollection(
+            uriTemplate: '/trips/search',
+            provider: TripSearchProvider::class,
+            security: "is_granted('ROLE_USER')",
+        ),
+
         new Get(security: "is_granted('TRIP_VIEW', object)"),
+
         new GetCollection(
             uriTemplate: '/my-trips/upcoming',
             provider: UserTripHistoryProvider::class,
@@ -31,9 +42,17 @@ use App\State\Provider\UserTripHistoryProvider;
             provider: UserTripHistoryProvider::class,
             security: "is_granted('ROLE_USER')",
         ),
+
+
         new Post(security: "is_granted('ROLE_USER')"),
-        new Patch(security: "is_granted('TRIP_EDIT', object)"),
-        new Delete(security: "is_granted('TRIP_DELETE', object)")
+        new Patch(
+            security: "is_granted('TRIP_EDIT', object)",
+            processor: TripUpdateProcessor::class
+        ),
+        new Delete(
+            security: "is_granted('TRIP_DELETE', object)",
+            processor: TripDeleteProcessor::class
+        )
     ]
 )]
 
@@ -47,6 +66,28 @@ class Trip
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\Column]
+    #[Assert\NotNull(message: 'La date de départ est obligatoire.')]
+    private ?\DateTime $departureDatetime = null;
+
+    #[ORM\Column]
+    #[Assert\NotNull(message: 'La date d’arrivée estimée est obligatoire.')]
+    private ?\DateTime $estimatedArrivalDatetime = null;
+
+    #[ORM\Column]
+    #[Assert\NotNull(message: 'Le prix total est obligatoire.')]
+    #[Assert\PositiveOrZero(message: 'Le prix doit être positif ou nul.')]
+    private ?float $totalPrice = 0;
+
+    #[ORM\Column]
+    #[Assert\NotNull(message: 'Le nombre de places est obligatoire.')]
+    #[Assert\Positive(message: 'Le nombre de places doit être supérieur à 0.')]
+    private ?int $availableSeats = 3;
+
+    #[ORM\Column(enumType: Trip_Creator_Role::class)]
+    #[Assert\NotNull(message: 'Le rôle du créateur est obligatoire.')]
+    private ?Trip_Creator_Role $tripCreatorRole = Trip_Creator_Role::DRIVER;
 
     /**
      * @var Collection<int, Notification>
@@ -62,33 +103,25 @@ class Trip
     #[ORM\JoinColumn(nullable: true)]
     private ?Vehicle $vehicle = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Adress $departureAddress = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Adress $arrivalAddress = null;
 
-    #[ORM\Column]
-    private ?\DateTime $departure_datetime = null;
 
     #[ORM\Column]
-    private ?\DateTime $estimated_arrival_datetime = null;
-
-
-    #[ORM\Column]
-    private ?float $total_price = null;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?float $pricePerPassenger = null;
 
     #[ORM\Column]
-    private ?float $price_per_passenger = null;
-
-    #[ORM\Column]
-    private ?float $average_rating = null;
+    private ?float $averageRating = null;
 
 
     #[ORM\Column(enumType: Trip_Status::class)]
-    private ?Trip_Status $trip_status = null;
+    private ?Trip_Status $tripStatus = null;
 
     /**
      * @var Collection<int, TripPreference>
@@ -101,9 +134,6 @@ class Trip
      */
     #[ORM\OneToMany(targetEntity: Traveler::class, mappedBy: 'trip')]
     private Collection $travelers;
-
-    #[ORM\Column(enumType: Trip_Creator_Role::class)]
-    private ?Trip_Creator_Role $trip_creator_role = null;
 
     /**
      * @var Collection<int, Review>
@@ -123,18 +153,15 @@ class Trip
     #[ORM\OneToMany(targetEntity: Waypoint::class, mappedBy: 'trip', orphanRemoval: true)]
     private Collection $waypoints;
 
-    #[ORM\Column(options: ['default' => 3])]
-    private ?int $available_seats = 3;
-
 
     #[ORM\Column(nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updated_at = null;
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $deleted_at = null;
+    private ?\DateTime $deletedAt = null;
 
     public function __construct()
     {
@@ -143,9 +170,12 @@ class Trip
         $this->reviews = new ArrayCollection();
         $this->messages = new ArrayCollection();
         $this->waypoints = new ArrayCollection();
-        $this->available_seats = 3;
-        $this->trip_status = Trip_Status::PUBLISHED;
-        $this->created_at = new \DateTimeImmutable();
+        $this->notifications = new ArrayCollection();
+        $this->availableSeats = 3;
+        $this->averageRating = 0;
+        $this->tripStatus = Trip_Status::PUBLISHED;
+        $this->tripCreatorRole = Trip_Creator_Role::DRIVER;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     // --- Getters et Setters (Mise à jour des noms) ---
@@ -166,6 +196,17 @@ class Trip
         return $this;
     }
 
+    public function getAvailableSeats(): ?int
+    {
+        return $this->availableSeats;
+    }
+
+    public function setAvailableSeats(?int $availableSeats): static
+    {
+        $this->availableSeats = $availableSeats;
+
+        return $this;
+    }
 
     /**
      * @return Collection<int, Notification>
@@ -197,60 +238,60 @@ class Trip
     }
     public function getAverageRating(): ?float
     {
-        return $this->average_rating;
+        return $this->averageRating;
     }
 
-    public function setAverageRating(float $average_rating): static
+    public function setAverageRating(float $averageRating): static
     {
-        $this->average_rating = $average_rating;
+        $this->averageRating = $averageRating;
 
         return $this;
     }
 
     public function getDepartureDatetime(): ?\DateTime
     {
-        return $this->departure_datetime;
+        return $this->departureDatetime;
     }
 
-    public function setDepartureDatetime(\DateTime $departure_datetime): static
+    public function setDepartureDatetime(\DateTime $departureDatetime): static
     {
-        $this->departure_datetime = $departure_datetime;
+        $this->departureDatetime = $departureDatetime;
 
         return $this;
     }
 
     public function getTotalPrice(): ?float
     {
-        return $this->total_price;
+        return $this->totalPrice;
     }
 
-    public function setTotalPrice(float $total_price): static
+    public function setTotalPrice(float $totalPrice): static
     {
-        $this->total_price = $total_price;
+        $this->totalPrice = $totalPrice;
 
         return $this;
     }
 
     public function getPricePerPassenger(): ?float
     {
-        return $this->price_per_passenger;
+        return $this->pricePerPassenger;
     }
 
-    public function setPricePerPassenger(float $price_per_passenger): static
+    public function setPricePerPassenger(float $pricePerPassenger): static
     {
-        $this->price_per_passenger = $price_per_passenger;
+        $this->pricePerPassenger = $pricePerPassenger;
 
         return $this;
     }
 
     public function getEstimatedArrivalDatetime(): ?\DateTime
     {
-        return $this->estimated_arrival_datetime;
+        return $this->estimatedArrivalDatetime;
     }
 
-    public function setEstimatedArrivalDatetime(\DateTime $estimated_arrival_datetime): static
+    public function setEstimatedArrivalDatetime(\DateTime $estimatedArrivalDatetime): static
     {
-        $this->estimated_arrival_datetime = $estimated_arrival_datetime;
+        $this->estimatedArrivalDatetime = $estimatedArrivalDatetime;
 
         return $this;
     }
@@ -345,12 +386,12 @@ class Trip
 
     public function getTripCreatorRole(): ?Trip_Creator_Role
     {
-        return $this->trip_creator_role;
+        return $this->tripCreatorRole;
     }
 
-    public function setTripCreatorRole(Trip_Creator_Role $trip_creator_role): static
+    public function setTripCreatorRole(Trip_Creator_Role $tripCreatorRole): static
     {
-        $this->trip_creator_role = $trip_creator_role;
+        $this->tripCreatorRole = $tripCreatorRole;
 
         return $this;
     }
@@ -444,36 +485,48 @@ class Trip
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getTripStatus(): ?Trip_Status
     {
-        return $this->created_at;
+        return $this->tripStatus;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setTripStatus(Trip_Status $tripStatus): static
     {
-        $this->created_at = $created_at;
+        $this->tripStatus = $tripStatus;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTime
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updated_at): static
+    public function setUpdatedAt(?\DateTime $updatedAt): static
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 
     public function getDeletedAt(): ?\DateTime
     {
-        return $this->deleted_at;
+        return $this->deletedAt;
     }
 
-    public function setDeletedAt(?\DateTime $deleted_at): static
+    public function setDeletedAt(?\DateTime $deletedAt): static
     {
-        $this->deleted_at = $deleted_at;
+        $this->deletedAt = $deletedAt;
         return $this;
     }
 }

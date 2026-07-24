@@ -35,7 +35,7 @@ class Waypoint
     private ?Adress $address = null;
 
     #[ORM\Column]
-    private ?\DateTime $estimated_at = null;
+    private ?\DateTime $estimatedAt = null;
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
@@ -71,12 +71,12 @@ class Waypoint
 
     public function getEstimatedAt(): ?\DateTime
     {
-        return $this->estimated_at;
+        return $this->estimatedAt;
     }
 
-    public function setEstimatedAt(\DateTime $estimated_at): static
+    public function setEstimatedAt(\DateTime $estimatedAt): static
     {
-        $this->estimated_at = $estimated_at;
+        $this->estimatedAt = $estimatedAt;
 
         return $this;
     }

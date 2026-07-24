@@ -45,11 +45,11 @@ class Vehicle
 
     #[ORM\Column]
     #[Assert\NotNull(message: 'La présence de la climatisation est obligatoire.')]
-    private ?bool $has_ac = null;
+    private ?bool $hasAc = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero(message: 'La consommation doit être positive ou nulle.')]
-    private ?float $consumption_liter_per_100km = null;
+    private ?float $consumptionLiterPer100km = null;
 
     #[ORM\Column]
     #[Assert\NotNull(message: 'Le nombre de places est obligatoire.')]
@@ -58,7 +58,7 @@ class Vehicle
 
     #[ORM\Column(enumType: Vehicle_State::class)]
     #[Assert\NotNull(message: 'L’état du véhicule est obligatoire.')]
-    private ?Vehicle_State $vehicle_state = null;
+    private ?Vehicle_State $vehicleState = null;
 
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     #[ORM\JoinColumn(nullable: false)]
@@ -70,17 +70,17 @@ class Vehicle
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $picture_url = null;
+    private ?string $pictureUrl = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updated_at = null;
+    private ?\DateTime $updatedAt = null;
 
     public function __construct()
     {
-        $this->created_at = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -102,23 +102,23 @@ class Vehicle
 
     public function hasAc(): ?bool
     {
-        return $this->has_ac;
+        return $this->hasAc;
     }
 
-    public function setHasAc(bool $has_ac): static
+    public function setHasAc(bool $hasAc): static
     {
-        $this->has_ac = $has_ac;
+        $this->hasAc = $hasAc;
         return $this;
     }
 
     public function getConsumptionLiterPer100km(): ?float
     {
-        return $this->consumption_liter_per_100km;
+        return $this->consumptionLiterPer100km;
     }
 
-    public function setConsumptionLiterPer100km(?float $consumption_liter_per_100km): static
+    public function setConsumptionLiterPer100km(?float $consumptionLiterPer100km): static
     {
-        $this->consumption_liter_per_100km = $consumption_liter_per_100km;
+        $this->consumptionLiterPer100km = $consumptionLiterPer100km;
 
         return $this;
     }
@@ -135,12 +135,12 @@ class Vehicle
 
     public function getVehicleState(): ?Vehicle_State
     {
-        return $this->vehicle_state;
+        return $this->vehicleState;
     }
 
-    public function setVehicleState(Vehicle_State $vehicle_state): static
+    public function setVehicleState(Vehicle_State $vehicleState): static
     {
-        $this->vehicle_state = $vehicle_state;
+        $this->vehicleState = $vehicleState;
         return $this;
     }
 
@@ -157,34 +157,34 @@ class Vehicle
 
     public function getPictureUrl(): ?string
     {
-        return $this->picture_url;
+        return $this->pictureUrl;
     }
 
-    public function setPictureUrl(?string $picture_url): static
+    public function setPictureUrl(?string $pictureUrl): static
     {
-        $this->picture_url = $picture_url;
+        $this->pictureUrl = $pictureUrl;
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTime
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updated_at): static
+    public function setUpdatedAt(?\DateTime $updatedAt): static
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 }
