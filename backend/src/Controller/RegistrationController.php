@@ -41,7 +41,6 @@ class RegistrationController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-
         if (
             !isset(
             $data['email'],
@@ -56,7 +55,6 @@ class RegistrationController
                 'error' => 'Missing required fields'
             ], Response::HTTP_BAD_REQUEST);
         }
-
 
         if (
             $userRepository->findOneBy(['email' => $data['email']]) ||

@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Entity;
-
+use App\State\Processor\MessageReadProcessor;
+use App\State\Processor\MessageProcessor;
+use App\State\Provider\ConversationProvider;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -16,8 +18,19 @@ use Doctrine\ORM\Mapping as ORM;
     operations: [
         new Get(security: "is_granted('ROLE_USER')"),
         new GetCollection(security: "is_granted('ROLE_USER')"),
-        new Post(security: "is_granted('ROLE_USER')"),
-        new Patch(security: "is_granted('ROLE_USER')"),
+        new GetCollection(
+            uriTemplate: '/trips/{tripId}/messages/{userId}',
+            provider: ConversationProvider::class,
+            security: "is_granted('ROLE_USER')"
+        ),
+        new Post(
+            security: "is_granted('ROLE_USER')",
+            processor: MessageProcessor::class
+        ),
+        new Patch(
+            security: "is_granted('ROLE_USER')",
+            processor: MessageReadProcessor::class
+        ),
         new Delete(security: "is_granted('ROLE_USER')")
     ]
 )]
