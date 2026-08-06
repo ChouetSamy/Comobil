@@ -133,15 +133,17 @@ class TripRepository extends ServiceEntityRepository
         $queryBuilder
             ->orderBy('t.departureDatetime', 'ASC');
 
-        $trips = $queryBuilder
-            ->getQuery()
-            ->getResult();
-
         if ($departureTime !== null) {
             $queryBuilder
                 ->andWhere('t.departureDatetime >= :departureTime')
                 ->setParameter('departureTime', $departureTime);
         }
+
+        $trips = $queryBuilder
+            ->getQuery()
+            ->getResult();
+
+
 
         return $trips;
     }

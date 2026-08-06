@@ -39,7 +39,7 @@ final class TripVoter extends Voter
             return false;
         }
 
-        // Admin et modérateur ont accès à tout
+        // Admin and moderator get full access
         if (
             in_array('ROLE_ADMIN', $user->getRoles(), true)
             || in_array('ROLE_MODERATOR', $user->getRoles(), true)
@@ -49,14 +49,14 @@ final class TripVoter extends Voter
 
         /** @var Trip $trip */
         $trip = $subject;
-
+        //forbid access if trip is CANCELLED
         if ($trip->getTripStatus() === Trip_Status::CANCELLED) {
             return false;
         }
 
         return match ($attribute) {
             self::VIEW => true,
-
+            //only creator can update or delete it's trip
             self::EDIT,
             self::DELETE => $trip->getCreator() === $user,
 
