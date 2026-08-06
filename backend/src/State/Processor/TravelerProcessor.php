@@ -35,22 +35,27 @@ final class TravelerProcessor implements ProcessorInterface
         /** @var User|null $user */
         $user = $this->security->getUser();
 
+        //user authentification
         if (!$user instanceof User) {
             throw new AccessDeniedHttpException();
         }
+        
 
         $trip = $traveler->getTrip();
 
+        //access denied if trip doesn't exist
         if ($trip === null) {
             throw new AccessDeniedHttpException('Trip not found.');
         }
-
+        
+        
         $existingTraveler = $this->travelerRepository->findOneBy([
             'trip' => $trip,
             'user' => $user,
         ]);
 
         if ($existingTraveler !== null) {
+            //forbid traveler to join a trip they were excluded from
             if (
                 $existingTraveler->getTravelerStatus()
                 === Traveler_Status::EXCLUDED
@@ -59,12 +64,13 @@ final class TravelerProcessor implements ProcessorInterface
                     'You have been excluded from this trip.'
                 );
             }
-
+           //forbid traveler to join a trip they already joined
             throw new ConflictHttpException(
                 'You have already joined this trip.'
             );
         }
 
+        //forbid male user to join female only trip
         foreach ($trip->getTripPreferences() as $tripPreference) {
             if (
                 $tripPreference->getPreference()?->getName() === "women_only"
