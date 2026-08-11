@@ -13,6 +13,7 @@ export default function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -77,20 +78,15 @@ export default function Login() {
 
                     <p className="-mt-1 text-[16px] text-zinc-900">
                         avec{" "}
-                        <strong>
-                            Comobil
-                        </strong>
-                        , tous roule
+                        <strong>Comobil</strong>
+                        , tous roulent
                     </p>
                 </div>
 
                 {/* Login form */}
                 <section
                     aria-labelledby="login-title"
-                    className="
-                        mt-20
-                        w-full
-                    "
+                    className="mt-20 w-full"
                 >
                     <h1
                         id="login-title"
@@ -106,11 +102,7 @@ export default function Login() {
 
                     <form
                         onSubmit={handleSubmit}
-                        className="
-                            flex
-                            flex-col
-                            gap-4
-                        "
+                        className="flex flex-col gap-4"
                     >
                         <label
                             htmlFor="email"
@@ -151,7 +143,7 @@ export default function Login() {
 
                         <input
                             id="password"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             required
                             autoComplete="current-password"
                             placeholder="Mot de passe..."
@@ -172,13 +164,33 @@ export default function Login() {
                             "
                         />
 
+                        {/* Show / hide password */}
+                        <label
+                            className="
+                                flex
+                                items-center
+                                gap-2
+                                text-sm
+                                text-zinc-700
+                            "
+                        >
+                            <input
+                                type="checkbox"
+                                checked={showPassword}
+                                onChange={(event) =>
+                                    setShowPassword(
+                                        event.target.checked,
+                                    )
+                                }
+                            />
+
+                            Afficher le mot de passe
+                        </label>
+
                         {error && (
                             <p
                                 role="alert"
-                                className="
-                                    text-sm
-                                    text-red-600
-                                "
+                                className="text-sm text-red-600"
                             >
                                 {error}
                             </p>
@@ -206,13 +218,7 @@ export default function Login() {
                         </button>
                     </form>
 
-                    <p
-                        className="
-                            mt-4
-                            text-sm
-                            text-zinc-800
-                        "
-                    >
+                    <p className="mt-4 text-sm text-zinc-800">
                         Pas de compte ?{" "}
                         <Link
                             to="/register"

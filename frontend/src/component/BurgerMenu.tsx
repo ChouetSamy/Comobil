@@ -1,9 +1,10 @@
 
 import {
     Bell,
-    CarFront,
-    History,
+    CalendarDays,
+    CirclePlus,
     Home,
+    Info,
     LogIn,
     LogOut,
     Mail,
@@ -31,12 +32,12 @@ const authenticatedLinks = [
     {
         to: "/trips/create",
         label: "Créer un trajet",
-        icon: CarFront,
+        icon: CirclePlus,
     },
     {
         to: "/trips/history",
         label: "Historique",
-        icon: History,
+        icon: CalendarDays,
     },
     { to: "/messages", label: "Messagerie", icon: Mail },
     {
@@ -45,6 +46,11 @@ const authenticatedLinks = [
         icon: Bell,
     },
     { to: "/profile", label: "Profil", icon: UserRound },
+    {
+        to: "/about",
+        label: "À propos",
+        icon: Info,
+    },
 ];
 
 export default function BurgerMenu({
@@ -56,7 +62,7 @@ export default function BurgerMenu({
     if (!isOpen) {
         return null;
     }
- 
+
     return (
         <div className="fixed inset-0 z-50">
             <button
