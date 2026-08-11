@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import logo from "../assets/Comobil_Logo.png";
 
@@ -24,6 +24,14 @@ export default function AppLayout({
 }: AppLayoutProps) {
     const [menuOpen, setMenuOpen] = useState(false);
 
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        onLogout?.();
+        setMenuOpen(false);
+        navigate("/");
+    };
+
     return (
         <div className="min-h-dvh w-full bg-white">
             <div className="mx-auto min-h-dvh w-full max-w-[768px]">
@@ -45,7 +53,7 @@ export default function AppLayout({
                     isOpen={menuOpen}
                     isAuthenticated={Boolean(user)}
                     onClose={() => setMenuOpen(false)}
-                    onLogout={onLogout}
+                    onLogout={handleLogout}
                 />
             </div>
         </div>

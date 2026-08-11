@@ -29,7 +29,7 @@ export default function BottomNav() {
             aria-label="Navigation rapide"
             className="
                 fixed bottom-0 left-1/2 z-40
-                flex h-16 w-full max-w-[768px]
+                flex h-14 w-full max-w-[768px]
                 -translate-x-1/2
                 items-center
                 bg-sky-600
