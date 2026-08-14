@@ -51,8 +51,7 @@ class Fleet
     private ?UserInfo $userInfo = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'L’adresse est obligatoire.')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Adress $adress = null;
 
     #[ORM\Column(length: 255, unique: true)]

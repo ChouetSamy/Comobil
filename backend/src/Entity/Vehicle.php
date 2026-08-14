@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Enum\Vehicle_State;
+use App\State\Processor\VehicleProcessor;
 use App\Repository\VehicleRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,6 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: "is_granted('ROLE_USER')"
         ),
         new Post(
+            processor: VehicleProcessor::class,
             security: "is_granted('ROLE_USER')"
         ),
         new Patch(
@@ -62,7 +64,6 @@ class Vehicle
 
     #[ORM\ManyToOne(inversedBy: 'vehicles')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'La flotte est obligatoire.')]
     private ?Fleet $fleet = null;
 
 
@@ -91,7 +92,6 @@ class Vehicle
     public function getFleet(): ?Fleet // CORRIGÉ : getFleetId -> getFleet
     {
         return $this->fleet;
-
     }
 
     public function setFleet(?Fleet $fleet): static // CORRIGÉ : setFleetId -> setFleet

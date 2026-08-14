@@ -118,7 +118,7 @@ export default function SearchResult() {
     const [error, setError] = useState("");
 
     // Update one form field.
-    const updateField = <Key extends keyof SearchForm>(
+    const updateField = <Key extends keyof SearchForm,>(
         key: Key,
         value: SearchForm[Key],
     ) => {

@@ -2,25 +2,28 @@
 
 namespace App\State\Processor;
 
+use App\Enum\Gender;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Entity\User;
+use App\Entity\UserInfo;
 use App\Entity\UserPreference;
-use Symfony\Bundle\SecurityBundle\Security;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 final class UserPreferenceProcessor implements ProcessorInterface
 {
     public function __construct(
         private Security $security,
         private EntityManagerInterface $entityManager,
-    ) {
-    }
+    ) {}
 
     public function process(
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
-        array $context = []
+        array $context = [],
     ): mixed {
         if (!$data instanceof UserPreference) {
             return $data;
@@ -28,18 +31,44 @@ final class UserPreferenceProcessor implements ProcessorInterface
 
         $user = $this->security->getUser();
 
-        if ($user === null) {
-            return $data;
+        if (!$user instanceof User) {
+            throw new AccessDeniedHttpException(
+                'User must be authenticated.'
+            );
         }
 
-        $userInfo = $data->getUserInfo();
+        $userInfo = $user->getUserInfo();
+
+        // Create UserInfo automatically if it does not exist yet.
+        if ($userInfo === null) {
+            $userInfo = new UserInfo();
+            $userInfo->setUser($user);
+
+            $this->entityManager->persist($userInfo);
+        }
+
+        // Prevent modification of another user's preference.
+        if (
+            $data->getUserInfo() !== null
+            && $data->getUserInfo() !== $userInfo
+        ) {
+            throw new AccessDeniedHttpException(
+                'You cannot modify another user\'s preferences.'
+            );
+        }
+
+        $data->setUserInfo($userInfo);
+
+        $preference = $data->getPreference();
 
         if (
-            $userInfo !== null
-            && $userInfo->getUser() !== $user
+            $preference !== null
+            && strtolower(str_replace(' ', '_', $preference->getDescription())) === 'women_only'
+            && $data->isActive() === true
+            && $user->getGender() !== Gender::FEMALE
         ) {
-            throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException(
-                'You cannot modify another user\'s preferences.'
+            throw new AccessDeniedHttpException(
+                'Only female users can enable the women_only preference.'
             );
         }
 

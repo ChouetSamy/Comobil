@@ -10,6 +10,7 @@ import {
     Mail,
     Search,
     UserRound,
+    Save,
     X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -24,6 +25,11 @@ interface BurgerMenuProps {
 
 const authenticatedLinks = [
     { to: "/", label: "Accueil", icon: Home },
+    {
+        to: "/profile/edit",
+        label: "modifier le profil",
+        icon: Save,
+    },
     {
         to: "/trips/search",
         label: "Rechercher un trajet",

@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\UserInfo;
 use App\Repository\UserInfoRepository;
+use App\Repository\UserRepository;
 use App\Enum\Gender;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -43,70 +45,126 @@ class ProfileController extends AbstractController
     }
 
 
-    #[Route('/profile', name: 'profile_update', methods: ['PATCH'])]
-    #[IsGranted('ROLE_USER')]
-    public function update(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        ValidatorInterface $validator
-    ): JsonResponse {
-        /** @var User|null $user */
-        $user = $this->getUser();
+ #[Route('/profile', name: 'profile_update', methods: ['PATCH'])]
+#[IsGranted('ROLE_USER')]
+public function update(
+    Request $request,
+    EntityManagerInterface $entityManager,
+    ValidatorInterface $validator,
+    UserRepository $userRepository,
+    UserPasswordHasherInterface $passwordHasher,
+): JsonResponse {
+    /** @var User|null $user */
+    $user = $this->getUser();
 
-        if (!$user ||$user->getDeletedAt() !== null) {
+    if (!$user || $user->getDeletedAt() !== null) {
+        return new JsonResponse([
+            'error' => 'Unauthorized',
+        ], 401);
+    }
+
+    $data = json_decode($request->getContent(), true);
+
+    if (!is_array($data)) {
+        return new JsonResponse([
+            'error' => 'Invalid JSON',
+        ], 400);
+    }
+
+    if (isset($data['firstName'])) {
+        $user->setFirstName($data['firstName']);
+    }
+
+    if (isset($data['lastName'])) {
+        $user->setLastName($data['lastName']);
+    }
+
+    if (isset($data['phone'])) {
+        $existingUser = $userRepository->findOneBy([
+            'phone' => $data['phone'],
+        ]);
+
+        if (
+            $existingUser !== null
+            && $existingUser !== $user
+        ) {
             return new JsonResponse([
-                'error' => 'Unauthorized'
-            ], 401);
-        }
-
-        $data = json_decode($request->getContent(), true);
-
-        if (!is_array($data)) {
-            return new JsonResponse([
-                'error' => 'Invalid JSON'
+                'error' => 'Phone already used.',
             ], 400);
         }
 
-        if (isset($data['firstName'])) {
-            $user->setFirstName($data['firstName']);
-        }
+        $user->setPhone($data['phone']);
+    }
 
-        if (isset($data['lastName'])) {
-            $user->setLastName($data['lastName']);
-        }
+    if (isset($data['email'])) {
+        $existingUser = $userRepository->findOneBy([
+            'email' => $data['email'],
+        ]);
 
-        if (isset($data['phone'])) {
-            $user->setPhone($data['phone']);
-        }
-
-        if (isset($data['gender'])) {
-            try {
-                $user->setGender(
-                    Gender::from($data['gender'])
-                );
-            } catch (\ValueError) {
-                return new JsonResponse([
-                    'error' => 'Invalid gender'
-                ], 400);
-            }
-        }
-
-        $user->setUpdatedAt(new \DateTime());
-
-        $errors = $validator->validate($user);
-
-        if (count($errors) > 0) {
+        if (
+            $existingUser !== null
+            && $existingUser !== $user
+        ) {
             return new JsonResponse([
-                'errors' => (string) $errors
+                'error' => 'Email already used.',
             ], 400);
         }
 
-        $entityManager->flush();
+        $user->setEmail($data['email']);
+    }
+
+    if (isset($data['gender'])) {
+        try {
+            $user->setGender(
+                Gender::from($data['gender'])
+            );
+        } catch (\ValueError) {
+            return new JsonResponse([
+                'error' => 'Invalid gender',
+            ], 400);
+        }
+    }
+
+    if (
+        isset($data['password'])
+        && $data['password'] !== ''
+    ) {
+        if (strlen($data['password']) < 8) {
+            return new JsonResponse([
+                'error' => 'Password must contain at least 8 characters.',
+            ], 400);
+        }
+
+        $user->setPassword(
+            $passwordHasher->hashPassword(
+                $user,
+                $data['password']
+            )
+        );
+    }
+
+    $user->setUpdatedAt(new \DateTime());
+
+    $errors = $validator->validate($user);
+
+    if (count($errors) > 0) {
+        $messages = [];
+
+        foreach ($errors as $error) {
+            $messages[] = $error->getMessage();
+        }
 
         return new JsonResponse([
-            'message' => 'Profile updated'
-        ]);
+            'errors' => $messages,
+        ], 400);
     }
+
+    $entityManager->flush();
+
+    return new JsonResponse([
+        'message' => 'Profile updated',
+    ]);
+}
 
 
     #[Route('/profile', name: 'profile_delete', methods: ['DELETE'])]
