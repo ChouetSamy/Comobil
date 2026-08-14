@@ -18,6 +18,11 @@ class TripRepository extends ServiceEntityRepository
         parent::__construct($registry, Trip::class);
     }
 
+
+
+
+
+
     /**
      * Retourne les trajets à venir auxquels l'utilisateur participe
      * en tant que créateur ou voyageur.
@@ -27,6 +32,7 @@ class TripRepository extends ServiceEntityRepository
     public function findUpcomingTripsForUser(User $user): array
     {
         return $this->createQueryBuilder('t')
+            ->distinct()
             ->leftJoin('t.travelers', 'traveler')
             ->andWhere(
                 't.creator = :user OR traveler.user = :user'
@@ -39,6 +45,7 @@ class TripRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    
     /**
      * Retourne les trajets passés auxquels l'utilisateur a participé
      * en tant que créateur ou voyageur.
@@ -48,6 +55,7 @@ class TripRepository extends ServiceEntityRepository
     public function findPastTripsForUser(User $user): array
     {
         return $this->createQueryBuilder('t')
+            ->distinct()
             ->leftJoin('t.travelers', 'traveler')
             ->andWhere(
                 't.creator = :user OR traveler.user = :user'
@@ -59,6 +67,8 @@ class TripRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+
 
     /**
      * Recherche des trajets selon différents critères.

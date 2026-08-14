@@ -33,12 +33,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 
         new GetCollection(
             uriTemplate: '/my-trips/upcoming',
+            name: 'my_trips_upcoming',
             provider: UserTripHistoryProvider::class,
             security: "is_granted('ROLE_USER')",
         ),
 
         new GetCollection(
             uriTemplate: '/my-trips/past',
+            name: 'my_trips_past',
             provider: UserTripHistoryProvider::class,
             security: "is_granted('ROLE_USER')",
         ),

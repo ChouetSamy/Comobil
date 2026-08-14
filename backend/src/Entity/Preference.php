@@ -86,7 +86,7 @@ class Preference
     {
         if (!$this->userPreferences->contains($userPreference)) {
             $this->userPreferences->add($userPreference);
-            $userPreference->setPreferences($this);
+            $userPreference->setPreference($this);
         }
 
         return $this;
@@ -96,8 +96,8 @@ class Preference
     {
         if ($this->userPreferences->removeElement($userPreference)) {
             // set the owning side to null (unless already changed)
-            if ($userPreference->getPreferences() === $this) {
-                $userPreference->setPreferences(null);
+            if ($userPreference->getPreference() === $this) {
+                $userPreference->setPreference(null);
             }
         }
 

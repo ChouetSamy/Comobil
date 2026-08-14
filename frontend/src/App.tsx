@@ -2,6 +2,7 @@
 //import { useState } from 'react'
 import NotFound from "./page/NotFound";
 import AppLayout from "./layout/AppLayout";
+import EditProfile from "./page/EditProfile";
 import { Route, Routes } from "react-router-dom";
 import About from "./page/About";
 import { useAuth } from "./context/AuthContext";
@@ -33,6 +34,10 @@ export default function App() {
                     />
                 }
             >
+                <Route
+                    path="/profile/edit"
+                    element={<EditProfile />}
+                />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/trips/history" element={<TripHistory />} />
@@ -43,6 +48,10 @@ export default function App() {
                     element={<SearchResult />}
                 />
             </Route>
+            <Route
+                path="/history"
+                element={<TripHistory />}
+            />
             <Route
                 path="/about"
                 element={<About />}

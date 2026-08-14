@@ -4,6 +4,7 @@ namespace App\State\Provider;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\Entity\User;
 use App\Repository\TripRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -22,16 +23,16 @@ final class UserTripHistoryProvider implements ProviderInterface
     ): array {
         $user = $this->security->getUser();
 
-        if (!$user) {
+        if (!$user instanceof User) {
             return [];
         }
 
-        $status = $uriVariables['status'] ?? 'upcoming';
-
-        if ($status === 'past') {
-            return $this->tripRepository->findPastTripsForUser($user);
+        if ($operation->getName() === 'my_trips_past') {
+            return $this->tripRepository
+                ->findPastTripsForUser($user);
         }
 
-        return $this->tripRepository->findUpcomingTripsForUser($user);
+        return $this->tripRepository
+            ->findUpcomingTripsForUser($user);
     }
 }
