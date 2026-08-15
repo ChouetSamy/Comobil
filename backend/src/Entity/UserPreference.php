@@ -53,6 +53,7 @@ class UserPreference
     #[ORM\Column]
     private ?int $id = null;
 
+    
 
     #[ORM\ManyToOne(inversedBy: 'userPreferences')]
     #[ORM\JoinColumn(nullable: false)]
