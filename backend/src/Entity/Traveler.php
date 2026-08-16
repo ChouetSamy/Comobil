@@ -53,7 +53,7 @@ class Traveler
     #[ORM\JoinColumn(nullable: false)]
     private ?Trip $trip = null;
 
-    #[Assert\NotNull]
+
     #[ORM\ManyToOne(inversedBy: 'travelers')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;

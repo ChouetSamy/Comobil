@@ -87,4 +87,20 @@ class MessageRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
     }
+
+    /**
+     * Retourne les messages collectifs d'un trajet.
+     *
+     * @return Message[]
+     */
+    public function findTripMessages(\App\Entity\Trip $trip): array
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.trip = :trip')
+            ->andWhere('m.receiver IS NULL')
+            ->setParameter('trip', $trip)
+            ->orderBy('m.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

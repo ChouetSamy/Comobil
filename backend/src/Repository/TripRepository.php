@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Enum\Trip_Status;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\TripPreference;
 
 /**
  * @extends ServiceEntityRepository<Trip>
@@ -45,7 +46,7 @@ class TripRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    
+
     /**
      * Retourne les trajets passés auxquels l'utilisateur a participé
      * en tant que créateur ou voyageur.
@@ -81,80 +82,216 @@ class TripRepository extends ServiceEntityRepository
         ?\DateTimeInterface $departureDate,
         ?\DateTimeInterface $departureTime,
         ?array $preferencesFilter,
+        bool $canViewWomenOnly = false,
     ): array {
+        $now = new \DateTimeImmutable();
+
         $queryBuilder = $this->createQueryBuilder('t')
+            ->distinct()
             ->leftJoin('t.departureAddress', 'departureAddress')
             ->leftJoin('departureAddress.city', 'departureCity')
             ->leftJoin('t.arrivalAddress', 'arrivalAddress')
             ->leftJoin('arrivalAddress.city', 'arrivalCity')
             ->leftJoin('t.tripPreferences', 'tripPreference')
             ->leftJoin('tripPreference.preference', 'preference')
-            ->andWhere('t.tripStatus != :cancelled')
-            ->andWhere('t.availableSeats > 0')
-            ->setParameter('cancelled', Trip_Status::CANCELLED);
 
-        if ($departureCommune !== null) {
+            // Jamais de trajet annulé
+            ->andWhere('t.tripStatus != :cancelled')
+
+            // Jamais de trajet complet
+            ->andWhere('t.availableSeats > 0')
+
+            // Jamais de trajet passé
+            ->andWhere('t.departureDatetime >= :now')
+
+            ->setParameter(
+                'cancelled',
+                Trip_Status::CANCELLED
+            )
+            ->setParameter(
+                'now',
+                $now
+            );
+
+        /*
+     * Ville de départ facultative
+     */
+        if (
+            $departureCommune !== null
+            && trim($departureCommune) !== ''
+        ) {
             $queryBuilder
                 ->andWhere(
                     'LOWER(departureCity.commune) = LOWER(:departureCommune)'
                 )
-                ->setParameter('departureCommune', $departureCommune);
+                ->setParameter(
+                    'departureCommune',
+                    trim($departureCommune)
+                );
         }
 
-        if ($arrivalCommune !== null) {
+        /*
+     * Ville d'arrivée facultative
+     */
+        if (
+            $arrivalCommune !== null
+            && trim($arrivalCommune) !== ''
+        ) {
             $queryBuilder
                 ->andWhere(
                     'LOWER(arrivalCity.commune) = LOWER(:arrivalCommune)'
                 )
-                ->setParameter('arrivalCommune', $arrivalCommune);
+                ->setParameter(
+                    'arrivalCommune',
+                    trim($arrivalCommune)
+                );
         }
 
+        /*
+     * Date facultative.
+     *
+     * Si elle existe :
+     * on cherche uniquement entre
+     * 00:00 et 23:59:59 de cette journée.
+     */
         if ($departureDate !== null) {
-            $start = new \DateTimeImmutable(
-                $departureDate->format('Y-m-d') . ' 00:00:00'
-            );
+            $start =
+                new \DateTimeImmutable(
+                    $departureDate->format('Y-m-d')
+                        . ' 00:00:00'
+                );
 
-            $end = $start->modify('+1 day');
+            $end =
+                $start->modify('+1 day');
 
-            $queryBuilder
-                ->andWhere('t.departureDatetime >= :start')
-                ->andWhere('t.departureDatetime < :end')
-                ->setParameter('start', $start)
-                ->setParameter('end', $end);
-        }
-
-        if ($preferencesFilter !== null && $preferencesFilter !== []) {
             $queryBuilder
                 ->andWhere(
-                    'tripPreference.isActive = true
-                    AND preference.description IN (:preferences)'
+                    't.departureDatetime >= :start'
                 )
-                ->setParameter('preferences', $preferencesFilter)
-                ->groupBy('t.id')
+                ->andWhere(
+                    't.departureDatetime < :end'
+                )
+                ->setParameter(
+                    'start',
+                    $start
+                )
+                ->setParameter(
+                    'end',
+                    $end
+                );
+        }
+
+        /*
+     * Heure facultative.
+     *
+     * Le Provider ne la construit
+     * que lorsqu'une date existe.
+     */
+        if ($departureTime !== null) {
+            $queryBuilder
+                ->andWhere(
+                    't.departureDatetime >= :departureTime'
+                )
+                ->setParameter(
+                    'departureTime',
+                    $departureTime
+                );
+        }
+
+        /*
+     * Préférences facultatives.
+     */
+        if (
+            $preferencesFilter !== null
+            && $preferencesFilter !== []
+        ) {
+            $queryBuilder
+                ->andWhere(
+                    'tripPreference.isActive = true'
+                )
+                ->andWhere(
+                    'preference.description IN (:preferences)'
+                )
+                ->setParameter(
+                    'preferences',
+                    $preferencesFilter
+                )
+                ->groupBy(
+                    't.id'
+                )
                 ->having(
                     'COUNT(DISTINCT preference.description) = :preferencesCount'
                 )
                 ->setParameter(
                     'preferencesCount',
-                    count($preferencesFilter)
+                    count(
+                        $preferencesFilter
+                    )
                 );
         }
 
-        $queryBuilder
-            ->orderBy('t.departureDatetime', 'ASC');
+        if (!$canViewWomenOnly) {
+            /*
+     * Recherche les TripPreference
+     * "women_only" actives pour le trajet.
+     */
+            $womenOnlySubQuery =
+                $this
+                ->getEntityManager()
+                ->createQueryBuilder()
+                ->select('1')
+                ->from(
+                    TripPreference::class,
+                    'restrictedTripPreference'
+                )
+                ->join(
+                    'restrictedTripPreference.preference',
+                    'restrictedPreference'
+                )
+                ->where(
+                    'restrictedTripPreference.trip = t'
+                )
+                ->andWhere(
+                    'restrictedTripPreference.isActive = true'
+                )
+                ->andWhere(
+                    'restrictedPreference.description = :womenOnly'
+                );
 
-        if ($departureTime !== null) {
+            /*
+     * Pour un homme :
+     * le trajet est totalement retiré
+     * de la recherche.
+     */
             $queryBuilder
-                ->andWhere('t.departureDatetime >= :departureTime')
-                ->setParameter('departureTime', $departureTime);
+                ->andWhere(
+                    $queryBuilder
+                        ->expr()
+                        ->not(
+                            $queryBuilder
+                                ->expr()
+                                ->exists(
+                                    $womenOnlySubQuery
+                                        ->getDQL()
+                                )
+                        )
+                )
+                ->setParameter(
+                    'womenOnly',
+                    'women_only'
+                );
         }
 
-        $trips = $queryBuilder
+        return $queryBuilder
+            ->orderBy(
+                't.departureDatetime',
+                'ASC'
+            )
+
+            // MVP : maximum 50 résultats
+            ->setMaxResults(50)
+
             ->getQuery()
             ->getResult();
-
-
-
-        return $trips;
     }
 }

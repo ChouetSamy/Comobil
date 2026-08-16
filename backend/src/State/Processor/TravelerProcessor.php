@@ -5,13 +5,13 @@ namespace App\State\Processor;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Traveler;
-use App\Enum\Traveler_Status;
 use App\Entity\User;
 use App\Enum\Gender;
+use App\Enum\Traveler_Status;
+use App\Repository\TravelerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use App\Repository\TravelerRepository;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 final class TravelerProcessor implements ProcessorInterface
@@ -27,35 +27,39 @@ final class TravelerProcessor implements ProcessorInterface
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
-        array $context = []
+        array $context = [],
     ): mixed {
         /** @var Traveler $traveler */
         $traveler = $data;
 
-        /** @var User|null $user */
         $user = $this->security->getUser();
 
-        //user authentification
         if (!$user instanceof User) {
-            throw new AccessDeniedHttpException();
+            throw new AccessDeniedHttpException(
+                'You must be authenticated.'
+            );
         }
-        
 
         $trip = $traveler->getTrip();
 
-        //access denied if trip doesn't exist
         if ($trip === null) {
-            throw new AccessDeniedHttpException('Trip not found.');
+            throw new AccessDeniedHttpException(
+                'Trip not found.'
+            );
         }
-        
-        
-        $existingTraveler = $this->travelerRepository->findOneBy([
-            'trip' => $trip,
-            'user' => $user,
-        ]);
+
+        /*
+         * Interdit de rejoindre deux fois
+         * le même trajet.
+         */
+        $existingTraveler =
+            $this->travelerRepository
+                ->findOneBy([
+                    'trip' => $trip,
+                    'user' => $user,
+                ]);
 
         if ($existingTraveler !== null) {
-            //forbid traveler to join a trip they were excluded from
             if (
                 $existingTraveler->getTravelerStatus()
                 === Traveler_Status::EXCLUDED
@@ -64,18 +68,28 @@ final class TravelerProcessor implements ProcessorInterface
                     'You have been excluded from this trip.'
                 );
             }
-           //forbid traveler to join a trip they already joined
+
             throw new ConflictHttpException(
                 'You have already joined this trip.'
             );
         }
 
-        //forbid male user to join female only trip
-        foreach ($trip->getTripPreferences() as $tripPreference) {
+        /*
+         * Interdit aux hommes de rejoindre
+         * un trajet réservé aux femmes.
+         */
+        foreach (
+            $trip->getTripPreferences()
+            as $tripPreference
+        ) {
             if (
-                $tripPreference->getPreference()?->getName() === "women_only"
+                $tripPreference
+                    ->getPreference()
+                    ?->getDescription()
+                    === 'women_only'
                 && $tripPreference->isActive()
-                && $user->getGender() !== Gender::FEMALE
+                && $user->getGender()
+                    !== Gender::FEMALE
             ) {
                 throw new AccessDeniedHttpException(
                     'This trip is reserved for women.'
@@ -83,10 +97,18 @@ final class TravelerProcessor implements ProcessorInterface
             }
         }
 
-        // Le participant doit être l'utilisateur authentifié
+        /*
+         * L'utilisateur n'est JAMAIS choisi
+         * par le frontend.
+         *
+         * Il vient du JWT.
+         */
         $traveler->setUser($user);
 
-        $this->entityManager->persist($traveler);
+        $this->entityManager->persist(
+            $traveler
+        );
+
         $this->entityManager->flush();
 
         return $traveler;

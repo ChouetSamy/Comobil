@@ -3,6 +3,10 @@
 import NotFound from "./page/NotFound";
 import AppLayout from "./layout/AppLayout";
 import EditProfile from "./page/EditProfile";
+import PrivateMessage from "./page/PrivateMessage";
+import Mail from "./page/Mail";
+import TripMessage from "./page/TripMessage";
+import TripDetails from "./page/TripDetails";
 import { Route, Routes } from "react-router-dom";
 import About from "./page/About";
 import { useAuth } from "./context/AuthContext";
@@ -34,28 +38,44 @@ export default function App() {
                     />
                 }
             >
+                <Route path="/" element={<Home />} />
                 <Route
                     path="/profile/edit"
                     element={<EditProfile />}
                 />
-                <Route path="*" element={<NotFound />} />
-                <Route path="/" element={<Home />} />
                 <Route path="/trips/history" element={<TripHistory />} />
                 <Route path="/trips/create" element={<CreateTrip />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route
+                    path="/profile"
+                    element={<Profile />}
+                />
+
+                <Route
+                    path="/profile/:userId"
+                    element={<Profile />}
+                />
+                <Route
+                    path="/trips/:tripId"
+                    element={<TripDetails />}
+                />
                 <Route
                     path="/trips/search"
                     element={<SearchResult />}
                 />
+                <Route
+                    path="/trips/:tripId/messages/:userId"
+                    element={<PrivateMessage />}
+                />
+                <Route
+                    path="/trips/:tripId/messages"
+                    element={<TripMessage />}
+                />
+                <Route path="/messages" element={<Mail />} />
+                <Route path="/about" element={<About />} />
+                <Route path="*" element={<NotFound />} />
             </Route>
-            <Route
-                path="/history"
-                element={<TripHistory />}
-            />
-            <Route
-                path="/about"
-                element={<About />}
-            />
+
+            <Route path="/history" element={<TripHistory />} />
         </Routes>
     );
 }

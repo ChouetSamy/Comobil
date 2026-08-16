@@ -1,47 +1,115 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import TripCard from "../component/TripCard";
+import type {
+    Trip as TripCardTrip,
+    TripPreference,
+} from "../component/TripCard";
+
 const API_URL =
     import.meta.env.VITE_API_URL ?? "http://localhost:8080";
 
-type HistoryTab = "upcoming" | "past" | "mine";
+type HistoryTab =
+    | "upcoming"
+    | "past"
+    | "mine";
 
-interface City {
+/* =========================
+ * TYPES API
+ * ========================= */
+
+interface CityRef {
+    id?: number;
     commune?: string;
 }
 
-interface Address {
+interface AddressRef {
+    id?: number;
     street?: string;
-    city?: City | string;
+    city?: CityRef | string;
 }
 
-interface Trip {
+interface PreferenceRef {
+    id?: number;
+    description?: string;
+}
+
+interface TripPreferenceRef {
     id: number;
+
+    isActive?: boolean;
+    active?: boolean;
+
+    preference?:
+        | PreferenceRef
+        | string;
+}
+
+interface ApiTrip {
+    id: number;
+
     departureDatetime: string;
     estimatedArrivalDatetime: string;
+
     totalPrice?: number;
-    pricePerPassenger?: number;
+    pricePerPassenger?: number | null;
     availableSeats?: number;
-    departureAddress?: Address | string;
-    arrivalAddress?: Address | string;
+
+    tripCreatorRole?: string;
+
+    departureAddress?:
+        | AddressRef
+        | string;
+
+    arrivalAddress?:
+        | AddressRef
+        | string;
+
+    tripPreferences?: Array<
+        TripPreferenceRef | string
+    >;
 }
 
 interface TripCollection {
-    member?: Trip[];
-    "hydra:member"?: Trip[];
+    member?: ApiTrip[];
+    "hydra:member"?: ApiTrip[];
 }
 
+/* =========================
+ * PAGE
+ * ========================= */
+
 export default function TripHistory() {
-    const navigate = useNavigate();
+    const navigate =
+        useNavigate();
 
-    const [activeTab, setActiveTab] =
-        useState<HistoryTab>("upcoming");
+    const token =
+        localStorage.getItem("token");
 
-    const [upcomingTrips, setUpcomingTrips] =
-        useState<Trip[]>([]);
+    const [
+        activeTab,
+        setActiveTab,
+    ] =
+        useState<HistoryTab>(
+            "upcoming",
+        );
 
-    const [pastTrips, setPastTrips] =
-        useState<Trip[]>([]);
+    const [
+        upcomingTrips,
+        setUpcomingTrips,
+    ] =
+        useState<TripCardTrip[]>(
+            [],
+        );
+
+    const [
+        pastTrips,
+        setPastTrips,
+    ] =
+        useState<TripCardTrip[]>(
+            [],
+        );
 
     const [loading, setLoading] =
         useState(true);
@@ -49,94 +117,444 @@ export default function TripHistory() {
     const [error, setError] =
         useState("");
 
-    const token =
-        localStorage.getItem("token");
+    const authHeaders = {
+        Authorization:
+            `Bearer ${token}`,
 
-    useEffect(() => {
-        const loadHistory = async () => {
-            setLoading(true);
-            setError("");
+        Accept:
+            "application/ld+json",
+    };
 
-            try {
-                const [
-                    upcomingResponse,
-                    pastResponse,
-                ] = await Promise.all([
-                    fetch(
-                        `${API_URL}/api/my-trips/upcoming`,
-                        {
-                            headers: {
-                                Authorization:
-                                    `Bearer ${token}`,
-                                Accept:
-                                    "application/ld+json",
-                            },
-                        },
+    /* =========================
+     * FETCH IRI
+     * ========================= */
+
+    const fetchResource =
+        async <T,>(
+            resource: string,
+        ): Promise<T | null> => {
+            const url =
+                resource.startsWith("http")
+                    ? resource
+                    : `${API_URL}${resource}`;
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        headers:
+                            authHeaders,
+                    },
+                );
+
+            if (!response.ok) {
+                return null;
+            }
+
+            return response.json();
+        };
+
+    /* =========================
+     * ADDRESS
+     * ========================= */
+
+    const loadAddress =
+        async (
+            value?:
+                | AddressRef
+                | string,
+        ): Promise<AddressRef | null> => {
+            if (!value) {
+                return null;
+            }
+
+            let address:
+                AddressRef | null;
+
+            if (
+                typeof value
+                === "string"
+            ) {
+                address =
+                    await fetchResource<AddressRef>(
+                        value,
+                    );
+            } else {
+                address = value;
+            }
+
+            if (!address) {
+                return null;
+            }
+
+            if (
+                typeof address.city
+                === "string"
+            ) {
+                const city =
+                    await fetchResource<CityRef>(
+                        address.city,
+                    );
+
+                return {
+                    ...address,
+
+                    city:
+                        city
+                        ?? address.city,
+                };
+            }
+
+            return address;
+        };
+
+    /* =========================
+     * PREFERENCES
+     * ========================= */
+
+    const loadTripPreference =
+        async (
+            value:
+                | TripPreferenceRef
+                | string,
+        ): Promise<TripPreference | null> => {
+            let tripPreference:
+                TripPreferenceRef | null;
+
+            if (
+                typeof value
+                === "string"
+            ) {
+                tripPreference =
+                    await fetchResource<TripPreferenceRef>(
+                        value,
+                    );
+            } else {
+                tripPreference =
+                    value;
+            }
+
+            if (!tripPreference) {
+                return null;
+            }
+
+            let preference:
+                PreferenceRef | null =
+                null;
+
+            if (
+                typeof tripPreference
+                    .preference
+                === "string"
+            ) {
+                preference =
+                    await fetchResource<PreferenceRef>(
+                        tripPreference
+                            .preference,
+                    );
+            } else if (
+                tripPreference
+                    .preference
+            ) {
+                preference =
+                    tripPreference
+                        .preference;
+            }
+
+            if (
+                !preference?.id
+                || !preference.description
+            ) {
+                return null;
+            }
+
+            return {
+                id:
+                    tripPreference.id,
+
+                isActive:
+                    tripPreference
+                        .isActive
+                    ?? tripPreference
+                        .active
+                    ?? true,
+
+                preference: {
+                    id:
+                        preference.id,
+
+                    description:
+                        preference
+                            .description,
+                },
+            };
+        };
+
+    /* =========================
+     * HYDRATE TRIP
+     * ========================= */
+
+    const hydrateTrip =
+        async (
+            trip: ApiTrip,
+        ): Promise<TripCardTrip | null> => {
+            const [
+                departureAddress,
+                arrivalAddress,
+            ] =
+                await Promise.all([
+                    loadAddress(
+                        trip.departureAddress,
                     ),
 
-                    fetch(
-                        `${API_URL}/api/my-trips/past`,
-                        {
-                            headers: {
-                                Authorization:
-                                    `Bearer ${token}`,
-                                Accept:
-                                    "application/ld+json",
-                            },
-                        },
+                    loadAddress(
+                        trip.arrivalAddress,
                     ),
                 ]);
 
-                if (
-                    !upcomingResponse.ok
-                    || !pastResponse.ok
-                ) {
-                    throw new Error(
-                        "Impossible de charger l'historique.",
-                    );
-                }
-
-                const upcomingData:
-                    TripCollection =
-                    await upcomingResponse.json();
-
-                const pastData:
-                    TripCollection =
-                    await pastResponse.json();
-
-                setUpcomingTrips(
-                    upcomingData.member
-                    ?? upcomingData["hydra:member"]
-                    ?? [],
-                );
-
-                setPastTrips(
-                    pastData.member
-                    ?? pastData["hydra:member"]
-                    ?? [],
-                );
-            } catch (caughtError) {
-                setError(
-                    caughtError instanceof Error
-                        ? caughtError.message
-                        : "Une erreur est survenue.",
-                );
-            } finally {
-                setLoading(false);
+            if (
+                !departureAddress
+                || !arrivalAddress
+            ) {
+                return null;
             }
+
+            if (
+                typeof departureAddress.city
+                    !== "object"
+                || departureAddress.city
+                    === null
+            ) {
+                return null;
+            }
+
+            if (
+                typeof arrivalAddress.city
+                    !== "object"
+                || arrivalAddress.city
+                    === null
+            ) {
+                return null;
+            }
+
+            const preferenceResults =
+                await Promise.all(
+                    (
+                        trip.tripPreferences
+                        ?? []
+                    ).map(
+                        (
+                            preference,
+                        ) =>
+                            loadTripPreference(
+                                preference,
+                            ),
+                    ),
+                );
+
+            const tripPreferences =
+                preferenceResults.filter(
+                    (
+                        preference,
+                    ): preference is TripPreference =>
+                        preference !== null,
+                );
+
+            return {
+                id:
+                    trip.id,
+
+                departureDatetime:
+                    trip.departureDatetime,
+
+                estimatedArrivalDatetime:
+                    trip.estimatedArrivalDatetime,
+
+                totalPrice:
+                    trip.totalPrice
+                    ?? 0,
+
+                availableSeats:
+                    trip.availableSeats
+                    ?? 0,
+
+                tripCreatorRole:
+                    trip.tripCreatorRole
+                        === "PASSENGER"
+                        ? "PASSENGER"
+                        : "DRIVER",
+
+                pricePerPassenger:
+                    trip.pricePerPassenger
+                    ?? 0,
+
+                departureAddress: {
+                    street:
+                        departureAddress
+                            .street
+                        ?? "",
+
+                    city: {
+                        commune:
+                            departureAddress
+                                .city
+                                .commune
+                            ?? "—",
+                    },
+                },
+
+                arrivalAddress: {
+                    street:
+                        arrivalAddress
+                            .street
+                        ?? "",
+
+                    city: {
+                        commune:
+                            arrivalAddress
+                                .city
+                                .commune
+                            ?? "—",
+                    },
+                },
+
+                tripPreferences,
+            };
         };
+
+    /* =========================
+     * LOAD HISTORY
+     * ========================= */
+
+    useEffect(() => {
+        const loadHistory =
+            async () => {
+                setLoading(true);
+                setError("");
+
+                try {
+                    const [
+                        upcomingResponse,
+                        pastResponse,
+                    ] =
+                        await Promise.all([
+                            fetch(
+                                `${API_URL}/api/my-trips/upcoming`,
+                                {
+                                    headers:
+                                        authHeaders,
+                                },
+                            ),
+
+                            fetch(
+                                `${API_URL}/api/my-trips/past`,
+                                {
+                                    headers:
+                                        authHeaders,
+                                },
+                            ),
+                        ]);
+
+                    if (
+                        !upcomingResponse.ok
+                        || !pastResponse.ok
+                    ) {
+                        throw new Error(
+                            "Impossible de charger l'historique.",
+                        );
+                    }
+
+                    const upcomingData:
+                        TripCollection =
+                        await upcomingResponse.json();
+
+                    const pastData:
+                        TripCollection =
+                        await pastResponse.json();
+
+                    const [
+                        hydratedUpcoming,
+                        hydratedPast,
+                    ] =
+                        await Promise.all([
+                            Promise.all(
+                                (
+                                    upcomingData.member
+                                    ?? upcomingData[
+                                        "hydra:member"
+                                    ]
+                                    ?? []
+                                ).map(
+                                    hydrateTrip,
+                                ),
+                            ),
+
+                            Promise.all(
+                                (
+                                    pastData.member
+                                    ?? pastData[
+                                        "hydra:member"
+                                    ]
+                                    ?? []
+                                ).map(
+                                    hydrateTrip,
+                                ),
+                            ),
+                        ]);
+
+                    setUpcomingTrips(
+                        hydratedUpcoming.filter(
+                            (
+                                trip,
+                            ): trip is TripCardTrip =>
+                                trip !== null,
+                        ),
+                    );
+
+                    setPastTrips(
+                        hydratedPast.filter(
+                            (
+                                trip,
+                            ): trip is TripCardTrip =>
+                                trip !== null,
+                        ),
+                    );
+                } catch (
+                    caughtError
+                ) {
+                    setError(
+                        caughtError
+                            instanceof Error
+                            ? caughtError.message
+                            : "Une erreur est survenue.",
+                    );
+                } finally {
+                    setLoading(false);
+                }
+            };
 
         void loadHistory();
     }, []);
 
+    /*
+     * MVP :
+     * "Mes trajets" réutilise pour
+     * l'instant les trajets à venir.
+     */
     const trips =
         activeTab === "past"
             ? pastTrips
             : upcomingTrips;
 
     return (
-        <div className="w-full bg-white pb-20">
-            {/* Tabs */}
+        <div
+            className="
+                w-full
+                bg-white
+                pb-20
+            "
+        >
+            {/* TABS */}
             <nav
                 className="
                     grid
@@ -146,61 +564,51 @@ export default function TripHistory() {
                     text-white
                 "
             >
-                <button
-                    type="button"
-                    onClick={() =>
-                        setActiveTab("upcoming")
+                <TabButton
+                    active={
+                        activeTab
+                        === "upcoming"
                     }
-                    className={`
-                        h-10
-                        ${
-                            activeTab === "upcoming"
-                                ? "bg-sky-600"
-                                : "bg-zinc-800"
-                        }
-                    `}
+                    onClick={() =>
+                        setActiveTab(
+                            "upcoming",
+                        )
+                    }
                 >
                     à venir
-                </button>
+                </TabButton>
 
-                <button
-                    type="button"
-                    onClick={() =>
-                        setActiveTab("past")
+                <TabButton
+                    active={
+                        activeTab
+                        === "past"
                     }
-                    className={`
-                        h-10
-                        border-x
-                        border-zinc-700
-                        ${
-                            activeTab === "past"
-                                ? "bg-sky-600"
-                                : "bg-zinc-800"
-                        }
-                    `}
+                    bordered
+                    onClick={() =>
+                        setActiveTab(
+                            "past",
+                        )
+                    }
                 >
                     passé
-                </button>
+                </TabButton>
 
-                <button
-                    type="button"
-                    onClick={() =>
-                        setActiveTab("mine")
+                <TabButton
+                    active={
+                        activeTab
+                        === "mine"
                     }
-                    className={`
-                        h-10
-                        ${
-                            activeTab === "mine"
-                                ? "bg-sky-600"
-                                : "bg-zinc-800"
-                        }
-                    `}
+                    onClick={() =>
+                        setActiveTab(
+                            "mine",
+                        )
+                    }
                 >
                     Mes trajets
-                </button>
+                </TabButton>
             </nav>
 
-            {/* Content */}
+            {/* CONTENT */}
             <main
                 className="
                     mx-auto
@@ -239,7 +647,8 @@ export default function TripHistory() {
 
                 {!loading
                     && !error
-                    && trips.length === 0 && (
+                    && trips.length
+                        === 0 && (
                     <p
                         className="
                             py-8
@@ -254,19 +663,33 @@ export default function TripHistory() {
 
                 {!loading
                     && !error
-                    && (
-                    <div className="space-y-3">
-                        {trips.map((trip) => (
-                            <TripTicket
-                                key={trip.id}
-                                trip={trip}
-                                onClick={() =>
-                                    navigate(
-                                        `/trips/${trip.id}`,
-                                    )
-                                }
-                            />
-                        ))}
+                    && trips.length
+                        > 0 && (
+                    <div
+                        className="
+                            space-y-3
+                        "
+                    >
+                        {trips.map(
+                            (trip) => (
+                                <TripCard
+                                    key={
+                                        trip.id
+                                    }
+                                    trip={
+                                        trip
+                                    }
+                                    onClick={
+                                        (
+                                            tripId,
+                                        ) =>
+                                            navigate(
+                                                `/trips/${tripId}`,
+                                            )
+                                    }
+                                />
+                            ),
+                        )}
                     </div>
                 )}
             </main>
@@ -274,377 +697,42 @@ export default function TripHistory() {
     );
 }
 
-function TripTicket({
-    trip,
+/* =========================
+ * TAB
+ * ========================= */
+
+function TabButton({
+    active,
     onClick,
+    children,
+    bordered = false,
 }: {
-    trip: Trip;
+    active: boolean;
     onClick: () => void;
+    children: string;
+    bordered?: boolean;
 }) {
-    const departureDate =
-        new Date(
-            trip.departureDatetime,
-        );
-
-    const arrivalDate =
-        new Date(
-            trip.estimatedArrivalDatetime,
-        );
-
-    const departureCity =
-        getCity(
-            trip.departureAddress,
-        );
-
-    const arrivalCity =
-        getCity(
-            trip.arrivalAddress,
-        );
-
-    const departureStreet =
-        getStreet(
-            trip.departureAddress,
-        );
-
-    const arrivalStreet =
-        getStreet(
-            trip.arrivalAddress,
-        );
-
     return (
         <button
             type="button"
             onClick={onClick}
-            className="
-                block
-                w-full
-                border
-                border-zinc-300
-                bg-white
-                text-left
-                shadow-sm
-            "
+            className={`
+                h-10
+
+                ${
+                    bordered
+                        ? "border-x border-zinc-700"
+                        : ""
+                }
+
+                ${
+                    active
+                        ? "bg-sky-600"
+                        : "bg-zinc-800"
+                }
+            `}
         >
-            {/* Link row */}
-            <div
-                className="
-                    flex
-                    h-7
-                    items-center
-                    justify-between
-                    px-3
-                    text-[10px]
-                    text-zinc-700
-                "
-            >
-                <span>
-                    Voir le trajet
-                </span>
-
-                <span>
-                    &gt;&gt;
-                </span>
-            </div>
-
-            {/* Main trip infos */}
-            <div className="px-4 pb-4">
-                <div
-                    className="
-                        grid
-                        grid-cols-2
-                        gap-6
-                    "
-                >
-                    <div>
-                        <h2
-                            className="
-                                text-[22px]
-                                font-bold
-                                leading-tight
-                                text-zinc-700
-                            "
-                        >
-                            {departureCity}
-                        </h2>
-
-                        <p
-                            className="
-                                mt-2
-                                min-h-8
-                                text-[10px]
-                                leading-tight
-                                text-zinc-600
-                            "
-                        >
-                            {departureStreet}
-                        </p>
-                    </div>
-
-                    <div>
-                        <h2
-                            className="
-                                text-[22px]
-                                font-bold
-                                leading-tight
-                                text-zinc-700
-                            "
-                        >
-                            {arrivalCity}
-                        </h2>
-
-                        <p
-                            className="
-                                mt-2
-                                min-h-8
-                                text-[10px]
-                                leading-tight
-                                text-zinc-600
-                            "
-                        >
-                            {arrivalStreet}
-                        </p>
-                    </div>
-                </div>
-
-                <div
-                    className="
-                        mt-4
-                        grid
-                        grid-cols-2
-                        gap-6
-                    "
-                >
-                    <div>
-                        <p
-                            className="
-                                text-[10px]
-                                text-zinc-500
-                            "
-                        >
-                            Départ
-                        </p>
-
-                        <p
-                            className="
-                                text-[30px]
-                                font-light
-                                leading-none
-                                text-zinc-700
-                            "
-                        >
-                            {formatTime(
-                                departureDate,
-                            )}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p
-                            className="
-                                text-[10px]
-                                text-zinc-500
-                            "
-                        >
-                            Arrivée estimée
-                        </p>
-
-                        <p
-                            className="
-                                text-[30px]
-                                font-light
-                                leading-none
-                                text-zinc-700
-                            "
-                        >
-                            {formatTime(
-                                arrivalDate,
-                            )}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Blue price block */}
-            <div
-                className="
-                    bg-sky-600
-                    px-4
-                    py-3
-                    text-white
-                "
-            >
-                <div
-                    className="
-                        grid
-                        grid-cols-2
-                        items-end
-                        gap-4
-                    "
-                >
-                    <div>
-                        <p
-                            className="
-                                text-[9px]
-                                leading-none
-                            "
-                        >
-                            actuellement
-                        </p>
-
-                        <div
-                            className="
-                                mt-1
-                                flex
-                                items-end
-                                gap-2
-                            "
-                        >
-                            <span
-                                className="
-                                    text-[28px]
-                                    font-bold
-                                    leading-none
-                                "
-                            >
-                                {formatPrice(
-                                    trip.pricePerPassenger,
-                                )}
-                                €
-                            </span>
-
-                            <span
-                                className="
-                                    pb-1
-                                    text-[12px]
-                                "
-                            >
-                                / pers.
-                            </span>
-                        </div>
-
-                        <p
-                            className="
-                                mt-1
-                                text-[11px]
-                            "
-                        >
-                            👥{" "}
-                            {trip.availableSeats ?? 0}
-                        </p>
-                    </div>
-
-                    <div>
-                        <p
-                            className="
-                                text-[12px]
-                                uppercase
-                            "
-                        >
-                            Coût du trajet
-                        </p>
-
-                        <p
-                            className="
-                                text-[36px]
-                                font-light
-                                leading-none
-                            "
-                        >
-                            {formatPrice(
-                                trip.totalPrice,
-                            )}
-                            €
-                        </p>
-                    </div>
-                </div>
-
-                <p
-                    className="
-                        mt-2
-                        text-[9px]
-                    "
-                >
-                    {formatPrice(
-                        trip.pricePerPassenger,
-                    )}
-                    € par personne si trajet complet
-                </p>
-            </div>
+            {children}
         </button>
     );
-}
-
-function getCity(
-    address?: Address | string,
-): string {
-    if (!address) {
-        return "—";
-    }
-
-    if (typeof address === "string") {
-        return "—";
-    }
-
-    if (
-        typeof address.city === "object"
-        && address.city !== null
-    ) {
-        return (
-            address.city.commune
-            ?? "—"
-        );
-    }
-
-    return "—";
-}
-
-function getStreet(
-    address?: Address | string,
-): string {
-    if (!address) {
-        return "";
-    }
-
-    if (typeof address === "string") {
-        return "";
-    }
-
-    return address.street ?? "";
-}
-
-function formatTime(
-    date: Date,
-): string {
-    if (
-        Number.isNaN(
-            date.getTime(),
-        )
-    ) {
-        return "--:--";
-    }
-
-    return date.toLocaleTimeString(
-        "fr-FR",
-        {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-        },
-    );
-}
-
-function formatPrice(
-    value?: number,
-): string {
-    if (
-        value === undefined
-        || value === null
-        || Number.isNaN(value)
-    ) {
-        return "0";
-    }
-
-    return Number.isInteger(value)
-        ? value.toString()
-        : value.toFixed(2);
 }

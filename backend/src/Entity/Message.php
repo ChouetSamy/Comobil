@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Entity;
+
 use App\State\Processor\MessageReadProcessor;
 use App\State\Processor\MessageProcessor;
 use App\State\Provider\ConversationProvider;
+use App\State\Provider\TripMessageProvider;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -21,6 +23,12 @@ use Doctrine\ORM\Mapping as ORM;
         new GetCollection(
             uriTemplate: '/trips/{tripId}/messages/{userId}',
             provider: ConversationProvider::class,
+            security: "is_granted('ROLE_USER')"
+        ),
+        new GetCollection(
+            uriTemplate: '/trips/{tripId}/messages',
+            uriVariables: ['tripId'],
+            provider: TripMessageProvider::class,
             security: "is_granted('ROLE_USER')"
         ),
         new Post(

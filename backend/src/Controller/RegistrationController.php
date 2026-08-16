@@ -90,7 +90,8 @@ class RegistrationController
             ->setFirstName($data['first_name'])
             ->setLastName($data['last_name'])
             ->setPhone($data['phone'])
-            ->setGender($gender);
+            ->setGender($gender)
+            ->setRoles(['ROLE_USER']);
 
 
         $user->setPassword(

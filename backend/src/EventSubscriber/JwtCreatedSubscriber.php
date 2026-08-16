@@ -31,10 +31,11 @@ class JwtCreatedSubscriber implements EventSubscriberInterface
             );
         }
 
-            $payload = $event->getData();
+        $payload = $event->getData();
 
-    $payload['token_version'] = $user->getTokenVersion();
+        $payload['roles'] = $user->getRoles();
+        $payload['token_version'] = $user->getTokenVersion();
 
-    $event->setData($payload);
+        $event->setData($payload);
     }
 }

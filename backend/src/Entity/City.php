@@ -24,7 +24,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CityRepository::class)]
 class City
-{    #[ORM\Id]
+{
+    #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
@@ -47,8 +48,8 @@ class City
     public function __construct()
     {
         $this->postalCodes = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
-
     public function getId(): ?int
     {
         return $this->id;

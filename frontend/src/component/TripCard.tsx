@@ -48,6 +48,7 @@ export interface Trip {
 interface TripCardProps {
     trip: Trip;
     onClick?: (tripId: number) => void;
+    showLink?: boolean;
 }
 
 const hasActivePreference = (
@@ -77,6 +78,7 @@ const formatPrice = (price: number): string =>
 export default function TripCard({
     trip,
     onClick,
+    showLink = true,
 }: TripCardProps) {
     const womenOnly = hasActivePreference(
         trip.tripPreferences,
@@ -99,37 +101,35 @@ export default function TripCard({
                 hover:shadow-md
             "
         >
-            <button
-                type="button"
-                onClick={() => onClick?.(trip.id)}
-                className="
-                    flex
-                    w-full
-                    items-center
-                    justify-between
-                    border-b
-                    border-zinc-100
-                    px-4
-                    py-2
-                    text-left
-                    text-xs
-                    font-medium
-                    text-zinc-600
-                    transition-colors
-                    hover:bg-zinc-50
-                    focus:outline-none
-                    focus-visible:ring-2
-                    focus-visible:ring-inset
-                    focus-visible:ring-sky-500
-                "
-            >
-                <span>Voir le trajet</span>
+            {showLink && (
+                <button
+                    type="button"
+                    onClick={() => onClick?.(trip.id)}
+                    className="
+            flex
+            w-full
+            items-center
+            justify-between
+            border-b
+            border-zinc-100
+            px-4
+            py-2
+            text-left
+            text-xs
+            font-medium
+            text-zinc-600
+            transition-colors
+            hover:bg-zinc-50
+        "
+                >
+                    <span>Voir le trajet</span>
 
-                <ChevronRight
-                    aria-hidden="true"
-                    size={16}
-                />
-            </button>
+                    <ChevronRight
+                        aria-hidden="true"
+                        size={16}
+                    />
+                </button>
+            )}
 
             <div className="grid grid-cols-2 gap-5 px-5 pt-4">
                 <section>

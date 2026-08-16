@@ -8,9 +8,10 @@ docker compose exec app php bin/console doctrine:schema:validate
 
 #vérifie la validité des données relation, dans le code et entre le code et la bdd
 
-Curls
+BDD
 
-/inscription
+docker compose exec db psql -U comobil -d comobil \
+-c 'SELECT id, departure_datetime FROM trip ORDER BY id;'
 
 curl -X POST http://localhost:8080/register \
   -H "Content-Type: application/json" \
@@ -52,6 +53,14 @@ TOKEN_FEMALE=$(curl -s -X POST http://localhost:8080/login \
     "email": "female@comobil.local",
     "password": "Test1234!"
   }' | jq -r '.token')
+
+curl -i "http://localhost:8080/api/trips/search?departureCommune=paris&preferences[]=women_only" \
+  -H "Authorization: Bearer $TOKEN_FEMALE" \
+  -H "Accept: application/ld+json"
+
+curl -i "http://localhost:8080/api/trips/search?departureCommune=paris" \
+  -H "Authorization: Bearer $TOKEN_FEMALE" \
+  -H "Accept: application/ld+json"
 
 /test du provider user_infos
 
